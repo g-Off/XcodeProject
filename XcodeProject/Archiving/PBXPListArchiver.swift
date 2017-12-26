@@ -38,6 +38,21 @@ public class DataStreamWriter: StreamWritable {
 	}
 }
 
+public class OutputStreamWriter: StreamWritable {
+	private let stream: OutputStream
+	public init(stream: OutputStream) {
+		self.stream = stream
+	}
+	
+	public func write(_ string: String) {
+		guard let stringData = string.data(using: .utf8) else { return }
+		// TODO: deal with errors
+		_ = stringData.withUnsafeBytes {
+			stream.write($0, maxLength: stringData.count)
+		}
+	}
+}
+
 struct Format {
 	struct Indentation: CustomStringConvertible {
 		var enabled = true

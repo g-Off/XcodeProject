@@ -41,9 +41,23 @@ public class PBXFileReference: PBXReference {
 	public private(set) var fileType: FileType = .unknown
 	public internal(set) var xcLanguageSpecificationIdentifier: String? // TODO: this should be a PBXFileType (xcode.lang.swift)
 	
-	public convenience init(name: String, path: String? = nil, sourceTree: SourceTree? = .group, fileType: String) {
-		self.init(name: name, path: path, sourceTree: sourceTree)
-		self.fileType = .lastKnown(fileType)
+	public required init(globalID: GlobalID) {
+		super.init(globalID: globalID)
+	}
+	
+	public required init(globalID: GlobalID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
+		super.init(globalID: GlobalID(), name: name, path: path, sourceTree: sourceTree)
+		if let path = path, let xcodeType = PBXFileType.fileType(filePath: path)?.xcodeType {
+			self.fileType = .lastKnown(xcodeType)
+			do {
+				//var encoding: String.Encoding = .utf8
+				//String(contentsOf: <#T##URL#>, usedEncoding: &<#T##String.Encoding#>)
+			} catch {
+				self.fileEncoding = .utf8
+			}
+		} else {
+			self.fileType = .unknown
+		}
 	}
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {

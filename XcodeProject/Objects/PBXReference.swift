@@ -43,25 +43,6 @@ public class PBXReference: PBXObject {
 		_buildFiles.remove(buildFile)
 	}
 	
-	public var url: URL? {
-		guard let sourceTree = sourceTree else { return nil }
-		guard let project = parentProject else { return nil }
-		let filePath = path ?? "" // TODO: this is probably not quite right
-		switch sourceTree {
-		case .absolute:
-			return URL(fileURLWithPath: filePath)
-		case .group:
-			if let parent = parent as? PBXReference {
-				return URL(fileURLWithPath: filePath, relativeTo: parent.url)
-			} else if let projectURL = project.projectDirectory {
-				return URL(fileURLWithPath: filePath, relativeTo: projectURL)
-			}
-		default:
-			break
-		}
-		return nil
-	}
-	
 	public var displayName: String {
 		if let name = name {
 			return name
@@ -71,8 +52,12 @@ public class PBXReference: PBXObject {
 		return ""
 	}
 	
-	public convenience init(name: String, path: String? = nil, sourceTree: SourceTree? = .group) {
-		self.init(globalID: GlobalID())
+	public required init(globalID: GlobalID) {
+		super.init(globalID: globalID)
+	}
+	
+	public required init(globalID: GlobalID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
+		super.init(globalID: globalID)
 		self.name = name
 		self.path = path
 		if let sourceTree = sourceTree {
@@ -83,7 +68,7 @@ public class PBXReference: PBXObject {
 			self.sourceTree = .group
 		}
 	}
-
+	
 	// MARK: - PList Unarchiving
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)

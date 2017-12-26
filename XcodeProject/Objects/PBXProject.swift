@@ -50,7 +50,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 	public required init(globalID: GlobalID) {
 		self.buildConfigurationList = XCConfigurationList()
 		self.mainGroup = PBXGroup(globalID: GlobalID())
-		self.productRefGroup = PBXGroup(name: "Products")
+		self.productRefGroup = PBXGroup(globalID: GlobalID(), name: "Products")
 		super.init(globalID: globalID)
 		
 		self.buildConfigurationList.parent = self
