@@ -14,6 +14,16 @@ final class XCVersionGroup: PBXGroup {
 	}
 	var versionGroupType: String?
 	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		currentVersion?.willMove(from: from)
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		currentVersion?.didMove(to: to)
+	}
+	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		

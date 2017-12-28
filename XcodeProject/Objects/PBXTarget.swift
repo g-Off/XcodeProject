@@ -44,6 +44,24 @@ public class PBXTarget: PBXObject, PBXContainer {
 		}
 	}
 	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		buildConfigurationList?.willMove(from: from)
+		buildPhases.forEach { $0.willMove(from: from) }
+		buildRules?.forEach { $0.willMove(from: from) }
+		dependencies.forEach { $0.willMove(from: from) }
+		productReference?.willMove(from: from)
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		buildConfigurationList?.didMove(to: to)
+		buildPhases.forEach { $0.didMove(to: to) }
+		buildRules?.forEach { $0.didMove(to: to) }
+		dependencies.forEach { $0.didMove(to: to) }
+		productReference?.didMove(to: to)
+	}
+	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		

@@ -9,7 +9,23 @@
 public class PBXGroup: PBXReference {
 	public var children: [PBXReference] = [] {
 		didSet {
-			children.forEach { $0.parent = self }
+			children.forEach {
+				$0.parent = self
+			}
+		}
+	}
+	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		children.forEach {
+			$0.willMove(from: from)
+		}
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		children.forEach {
+			$0.didMove(to: to)
 		}
 	}
 	
@@ -32,15 +48,19 @@ public class PBXGroup: PBXReference {
 	}
 	
 	public func add(child: PBXReference) {
-		child.parent = self
 		children.append(child)
+		self.child(child, didMoveTo: self)
 	}
 	
 	public func remove(child: PBXReference) {
 		guard child.parent == self else { return }
 		guard let index = children.index(of: child) else { return }
 		children.remove(at: index)
-		child.parent = nil
+		self.child(child, didMoveTo: nil)
+	}
+	
+	private func child(_ child: PBXReference, didMoveTo parent: PBXObject?) {
+		child.parent = parent
 	}
 	
 	public override var displayName: String {

@@ -33,7 +33,9 @@ public extension PBXGroup {
 	}
 	
 	func addGroup(pathComponent: String) -> PBXGroup {
-		return PBXGroup(globalID: GlobalID(), name: nil, path: pathComponent, sourceTree: .group)
+		let group = PBXGroup(globalID: GlobalID(), name: nil, path: pathComponent, sourceTree: .group)
+		children.append(group)
+		return group
 	}
 	
 	func sync(recursive: Bool) {
@@ -82,15 +84,15 @@ public extension PBXGroup {
 		guard let url = self.url else { return }
 		print("Adding missing file: \(url)")
 		let target = target ?? parentProject?.targets.first
-		let blah: [(String, PBXReference)] = children.flatMap {
+		let childPathItems: [(String, PBXReference)] = children.flatMap {
 			guard let childURL = $0.url else { return nil }
 			return (childURL.path, $0)
 		}
-		let blahMap = Dictionary(uniqueKeysWithValues: blah)
+		let childPathMap = Dictionary(uniqueKeysWithValues: childPathItems)
 		do {
 			let contents = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
 			let missing = contents.filter {
-				return blahMap[$0.path] == nil
+				return childPathMap[$0.path] == nil
 			}
 			let files = missing.filter { !$0.hasDirectoryPath }
 			let additionalFiles = files.flatMap {

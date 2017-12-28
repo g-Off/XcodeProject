@@ -27,7 +27,7 @@ public extension PBXProject {
 	}
 }
 
-extension PBXObject {
+public extension PBXObject {
 	var parentProject: PBXProject? {
 		var parent = self.parent
 		while parent != nil {

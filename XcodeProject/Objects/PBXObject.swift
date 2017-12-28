@@ -8,10 +8,27 @@
 
 public class PBXObject {
 	public let globalID: GlobalID
-	public internal(set) weak var parent: PBXObject?
+	public internal(set) weak var parent: PBXObject? {
+		willSet {
+			willMove(from: parent)
+		}
+		didSet {
+			didMove(to: parent)
+		}
+	}
 	
 	public required init(globalID: GlobalID) {
 		self.globalID = globalID
+	}
+	
+	func willMove(from: PBXObject?) {
+		guard let from = from else { return }
+		from.parentProject?.objects[globalID] = nil
+	}
+	
+	func didMove(to: PBXObject?) {
+		guard let to = to else { return }
+		to.parentProject?.objects[globalID] = self
 	}
 	
 	// MARK: - Unarchiving

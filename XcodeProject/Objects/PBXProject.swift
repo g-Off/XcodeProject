@@ -47,6 +47,8 @@ public final class PBXProject: PBXObject, PBXContainer {
 		return URL(fileURLWithPath: (path as NSString).deletingLastPathComponent)
 	}
 	
+	public internal(set) var objects: [GlobalID: PBXObject] = [:]
+	
 	public required init(globalID: GlobalID) {
 		self.buildConfigurationList = XCConfigurationList()
 		self.mainGroup = PBXGroup(globalID: GlobalID())
@@ -113,6 +115,26 @@ public final class PBXProject: PBXObject, PBXContainer {
 		self.targets = targets.flatMap {
 			let target: PBXTarget? = objectCache.object(for: GlobalID(rawValue: $0))
 			return target
+		}
+		
+		self.objects = objectCache.objects
+	}
+	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		mainGroup.willMove(from: from)
+		productRefGroup.willMove(from: from)
+		targets.forEach {
+			$0.willMove(from: from)
+		}
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		mainGroup.didMove(to: to)
+		productRefGroup.didMove(to: to)
+		targets.forEach {
+			$0.didMove(to: to)
 		}
 	}
 	

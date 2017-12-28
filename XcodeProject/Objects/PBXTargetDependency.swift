@@ -19,6 +19,18 @@ public class PBXTargetDependency: PBXObject {
 		}
 	}
 	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		target?.willMove(from: from)
+		targetProxy?.willMove(from: from)
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		target?.didMove(to: to)
+		targetProxy?.didMove(to: to)
+	}
+	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		self.name = plist["name"]?.string

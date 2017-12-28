@@ -14,6 +14,16 @@ public class PBXReferenceProxy: PBXReference {
 		}
 	}
 	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		remoteRef?.willMove(from: from)
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		remoteRef?.didMove(to: to)
+	}
+	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		self.fileType = plist["fileType"]?.string

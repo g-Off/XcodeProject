@@ -25,6 +25,16 @@ final class XCConfigurationList: PBXObject {
 		self.defaultConfigurationName = "Release"
 	}
 	
+	override func willMove(from: PBXObject?) {
+		super.willMove(from: from)
+		buildConfigurations.forEach { $0.willMove(from: from) }
+	}
+	
+	override func didMove(to: PBXObject?) {
+		super.didMove(to: to)
+		buildConfigurations.forEach { $0.didMove(to: to) }
+	}
+	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		
