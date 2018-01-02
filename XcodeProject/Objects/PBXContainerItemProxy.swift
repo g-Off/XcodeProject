@@ -26,7 +26,7 @@ final class PBXContainerItemProxy: PBXObject {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let containerPortal = objectCache.object(for: GlobalID(rawValue: plist["containerPortal"]?.string)),
+			let containerPortal = objectCache.object(for: PBXObject.ID(rawValue: plist["containerPortal"]?.string)),
 			let proxyType = ProxyType(string: plist["proxyType"]?.string),
 			let remoteGlobalIDString = plist["remoteGlobalIDString"]?.string,
 			let remoteInfo = plist["remoteInfo"]?.string

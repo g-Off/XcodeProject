@@ -51,7 +51,7 @@ public class PBXBuildPhase: PBXObject {
 		}
 		self._name = plist["name"]?.string
 		self.files = files.flatMap {
-			let file: PBXBuildFile? = objectCache.object(for: GlobalID(rawValue: $0))
+			let file: PBXBuildFile? = objectCache.object(for: PBXObject.ID(rawValue: $0))
 			return file
 		}
 		

@@ -155,8 +155,8 @@ public final class PBXPListArchiver {
 }
 
 final class ObjectVisitor {
-	private var objectMap: [GlobalID: PBXObject] = [:]
-	private var visited = Set<GlobalID>()
+	private var objectMap: [PBXObject.ID: PBXObject] = [:]
+	private var visited = Set<PBXObject.ID>()
 	
 	func visit(object: PBXObject?, where predicate: @escaping (_ object: PBXObject) -> Bool = { _ in return true}) {
 		guard let object = object else { return }
@@ -180,7 +180,7 @@ final class ObjectVisitor {
 		return objectMap.flatMap { return $0.value as? T }
 	}
 	
-	var keys: Set<GlobalID> {
+	var keys: Set<PBXObject.ID> {
 		return Set(objectMap.keys)
 	}
 }

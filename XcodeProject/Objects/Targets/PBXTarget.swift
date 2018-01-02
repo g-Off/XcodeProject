@@ -66,7 +66,7 @@ public class PBXTarget: PBXObject, PBXContainer {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let buildConfigurationListID = GlobalID(rawValue: plist["buildConfigurationList"]?.string),
+			let buildConfigurationListID = PBXObject.ID(rawValue: plist["buildConfigurationList"]?.string),
 			let buildConfigurationList = objectCache.object(for: buildConfigurationListID) as? XCConfigurationList,
 			let buildPhases = plist["buildPhases"]?.array,
 			let dependencies = plist["dependencies"]?.array,
@@ -77,16 +77,16 @@ public class PBXTarget: PBXObject, PBXContainer {
 		}
 		self.name = name
 		self.productName = productName
-		self.productReference = objectCache.object(for: GlobalID(rawValue: plist["productReference"]?.string)) as? PBXFileReference
+		self.productReference = objectCache.object(for: PBXObject.ID(rawValue: plist["productReference"]?.string)) as? PBXFileReference
 		self.buildConfigurationList = buildConfigurationList
 		self.buildPhases = buildPhases.flatMap {
-			return objectCache.object(for: GlobalID(rawValue: $0)) as? PBXBuildPhase
+			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXBuildPhase
 		}
 		self.buildRules = plist["buildRules"]?.array?.flatMap {
-			return objectCache.object(for: GlobalID(rawValue: $0)) as? PBXBuildRule
+			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXBuildRule
 		}
 		self.dependencies = dependencies.flatMap {
-			return objectCache.object(for: GlobalID(rawValue: $0)) as? PBXTargetDependency
+			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXTargetDependency
 		}
 	}
 	

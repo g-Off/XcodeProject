@@ -21,14 +21,14 @@ public final class PBXBuildFile: PBXObject {
 	}
 	var settings: [String: Any]?
 	
-	public convenience init(globalID: GlobalID, fileReference: PBXReference) {
+	public convenience init(globalID: PBXObject.ID, fileReference: PBXReference) {
 		self.init(globalID: globalID)
 		fileRef = fileReference
 	}
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.fileRef = objectCache.object(for: GlobalID(rawValue: plist["fileRef"]?.string))
+		self.fileRef = objectCache.object(for: PBXObject.ID(rawValue: plist["fileRef"]?.string))
 		self.settings = plist["settings"]?.dictionary
 	}
 	

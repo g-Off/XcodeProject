@@ -7,13 +7,13 @@
 //
 
 public extension PBXProject {
-	func generateGlobalId() -> GlobalID {
-		return GlobalID() // TODO: PBXProject should keep track of its already used ID's and prevent duplicates
+	func generateGlobalId() -> PBXObject.ID {
+		return PBXObject.ID() // TODO: PBXProject should keep track of its already used ID's and prevent duplicates
 	}
 }
 public extension PBXProject {
 	func addTarget(name: String, type: PBXNativeTarget.ProductType) {
-		let target = PBXNativeTarget(globalID: GlobalID())
+		let target = PBXNativeTarget(globalID: PBXObject.ID())
 		target.name = name
 		target.productName = name
 		target.productType = type

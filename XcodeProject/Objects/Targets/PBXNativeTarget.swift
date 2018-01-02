@@ -51,7 +51,7 @@ public final class PBXNativeTarget: PBXTarget {
 	public override func addBuildPhase<T: PBXBuildPhase>() -> T? {
 		var phase: T?
 		if T.self == PBXCopyFilesBuildPhase.self || T.self == PBXShellScriptBuildPhase.self {
-			phase = T(globalID: GlobalID())
+			phase = T(globalID: PBXObject.ID())
 		}
 		
 		let acceptablePhases: [PBXBuildPhase.Type] = [
@@ -62,7 +62,7 @@ public final class PBXNativeTarget: PBXTarget {
 		]
 		if acceptablePhases.contains(where: { return T.self == $0 }) &&
 			!buildPhases.contains(where: { type(of: $0) == T.self }) {
-			phase = T(globalID: GlobalID())
+			phase = T(globalID: PBXObject.ID())
 		}
 		
 		if let phase = phase {

@@ -47,12 +47,12 @@ public final class PBXProject: PBXObject, PBXContainer {
 		return URL(fileURLWithPath: (path as NSString).deletingLastPathComponent)
 	}
 	
-	public internal(set) var objects: [GlobalID: PBXObject] = [:]
+	public internal(set) var objects: [PBXObject.ID: PBXObject] = [:]
 	
-	public required init(globalID: GlobalID) {
+	public required init(globalID: PBXObject.ID) {
 		self.buildConfigurationList = XCConfigurationList()
-		self.mainGroup = PBXGroup(globalID: GlobalID())
-		self.productRefGroup = PBXGroup(globalID: GlobalID(), name: "Products")
+		self.mainGroup = PBXGroup(globalID: PBXObject.ID())
+		self.productRefGroup = PBXGroup(globalID: PBXObject.ID(), name: "Products")
 		super.init(globalID: globalID)
 		
 		self.buildConfigurationList.parent = self
@@ -63,7 +63,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 	}
 	
 	public convenience init() {
-		self.init(globalID: GlobalID())
+		self.init(globalID: PBXObject.ID())
 	}
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
@@ -71,14 +71,14 @@ public final class PBXProject: PBXObject, PBXContainer {
 		
 		guard
 			let attributes = plist["attributes"]?.dictionary,
-			let buildConfigurationListID = GlobalID(rawValue: plist["buildConfigurationList"]?.string),
+			let buildConfigurationListID = PBXObject.ID(rawValue: plist["buildConfigurationList"]?.string),
 			let buildConfigurationList = objectCache.object(for: buildConfigurationListID) as? XCConfigurationList,
 			let compatibilityVersion = CompatibilityVersion(rawValue: plist["compatibilityVersion"]?.string ?? ""),
 			let developmentRegion = plist["developmentRegion"]?.string,
 			let hasScannedForEncodings = plist["hasScannedForEncodings"]?.string,
 			let knownRegions = plist["knownRegions"]?.array,
-			let mainGroup = objectCache.object(for: GlobalID(rawValue: plist["mainGroup"]?.string)) as? PBXGroup,
-			let productRefGroup = objectCache.object(for: GlobalID(rawValue: plist["productRefGroup"]?.string)) as? PBXGroup,
+			let mainGroup = objectCache.object(for: PBXObject.ID(rawValue: plist["mainGroup"]?.string)) as? PBXGroup,
+			let productRefGroup = objectCache.object(for: PBXObject.ID(rawValue: plist["productRefGroup"]?.string)) as? PBXGroup,
 			let projectDirPath = plist["projectDirPath"]?.string,
 			let projectRoot = plist["projectRoot"]?.string,
 			let targets = plist["targets"]?.array
@@ -99,10 +99,10 @@ public final class PBXProject: PBXObject, PBXContainer {
 		if let projectReferences = plist["projectReferences"]?.object as? [[String: String]] {
 			self.projectReferences = projectReferences.flatMap { projectReference in
 				guard
-					let projectRefId = GlobalID(rawValue: projectReference["ProjectRef"]),
+					let projectRefId = PBXObject.ID(rawValue: projectReference["ProjectRef"]),
 					let projectRef = objectCache.object(for: projectRefId) as? PBXFileReference,
 					
-					let productGroupId = GlobalID(rawValue: projectReference["ProductGroup"]),
+					let productGroupId = PBXObject.ID(rawValue: projectReference["ProductGroup"]),
 					let productGroup = objectCache.object(for: productGroupId)
 					else {
 						return nil
@@ -113,7 +113,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		
 		self.projectRoot = projectRoot
 		self.targets = targets.flatMap {
-			let target: PBXTarget? = objectCache.object(for: GlobalID(rawValue: $0))
+			let target: PBXTarget? = objectCache.object(for: PBXObject.ID(rawValue: $0))
 			return target
 		}
 		

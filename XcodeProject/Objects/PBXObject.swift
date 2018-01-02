@@ -7,7 +7,7 @@
 //
 
 public class PBXObject {
-	public let globalID: GlobalID
+	public let globalID: PBXObject.ID
 	public internal(set) weak var parent: PBXObject? {
 		willSet {
 			willMove(from: parent)
@@ -17,7 +17,7 @@ public class PBXObject {
 		}
 	}
 	
-	public required init(globalID: GlobalID) {
+	public required init(globalID: PBXObject.ID) {
 		self.globalID = globalID
 	}
 	
