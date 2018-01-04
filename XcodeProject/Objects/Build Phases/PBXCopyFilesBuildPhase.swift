@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class PBXCopyFilesBuildPhase: PBXBuildPhase {
+public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
 	class override var defaultName: String {
 		return "Copy Files"
 	}

@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class PBXHeadersBuildPhase: PBXBuildPhase {
+public final class PBXHeadersBuildPhase: PBXBuildPhase {
 	class override var defaultName: String {
 		return "Copy Headers"
 	}

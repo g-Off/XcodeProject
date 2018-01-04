@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class PBXFrameworksBuildPhase: PBXBuildPhase {
+public final class PBXFrameworksBuildPhase: PBXBuildPhase {
 	class override var defaultName: String {
 		return "Link Binary With Libraries"
 	}

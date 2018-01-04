@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class PBXResourcesBuildPhase: PBXBuildPhase {
+public final class PBXResourcesBuildPhase: PBXBuildPhase {
 	class override var defaultName: String {
 		return "Copy Bundle Resources"
 	}

@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class PBXLegacyTarget: PBXTarget {
+public final class PBXLegacyTarget: PBXTarget {
 	var buildArguments: String?
 	var buildToolPath: String?
 	var buildWorkingDirectory: String?

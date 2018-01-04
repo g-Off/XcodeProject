@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-class PBXShellScriptBuildPhase: PBXBuildPhase {
+public final class PBXShellScriptBuildPhase: PBXBuildPhase {
 	var inputPaths: [String] = []
 	var outputPaths: [String] = []
 	var shellPath: String?

@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public class PBXReferenceProxy: PBXReference {
+public final class PBXReferenceProxy: PBXReference {
 	var fileType: String? //PBXFileType
 	var remoteRef: PBXContainerItemProxy? {
 		didSet {

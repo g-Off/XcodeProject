@@ -16,7 +16,6 @@ public final class PBXBuildFile: PBXObject {
 		didSet {
 			oldValue?.unregister(buildFile: self)
 			fileRef?.register(buildFile: self)
-			//fileRef?.parent = self
 		}
 	}
 	var settings: [String: Any]?

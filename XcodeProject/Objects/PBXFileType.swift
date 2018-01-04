@@ -40,7 +40,6 @@ public extension PBXFileType {
 	}
 	
 	static func fileType(filePath: String) -> PBXFileType? {
-//		FileManager.default.attributesOfItem(atPath: <#T##String#>)
 		let fileExtension = (filePath as NSString).pathExtension
 		return fileType(fileExtension: fileExtension)
 	}

@@ -14,7 +14,6 @@ public protocol WorkspaceReference: class {
 }
 
 public protocol WorkspaceItem: WorkspaceReference {
-	// absolute, container, group, self, developer (?)
 	var location: String { get }
 }
 

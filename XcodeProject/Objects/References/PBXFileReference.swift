@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class PBXFileReference: PBXReference {
+public final class PBXFileReference: PBXReference {
 	public enum FileType {
 		case lastKnown(String)
 		case explicit(String)
