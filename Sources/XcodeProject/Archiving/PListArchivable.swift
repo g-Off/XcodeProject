@@ -72,10 +72,10 @@ extension String: PListArchivable {
 		("\t", "\\t"),
 		]
 	
-	fileprivate var quotedString: String {
+	var quotedString: String {
 		var string = self
 		
-		let characterSet = CharacterSet(charactersIn: "+-<>@$()=,").union(CharacterSet.whitespacesAndNewlines)
+		let characterSet = CharacterSet(charactersIn: "+-<>@$()=,:").union(CharacterSet.whitespacesAndNewlines)
 		
 		var requiresQuotes = string.isEmpty
 		if !requiresQuotes {

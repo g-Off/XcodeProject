@@ -11,16 +11,10 @@ import GameplayKit
 
 extension PBXObject {
 	public struct ID: RawRepresentable {
-		private static let hexCharacters = CharacterSet(charactersIn: "0123456789ABCDEF")
-		
 		public let rawValue: String
 		
-		public init?(rawValue: String) {
-			if rawValue.utf16.flatMap({ UnicodeScalar($0) }).filter({ PBXObject.ID.hexCharacters.contains($0) }).count == 24 {
-				self.rawValue = rawValue
-			} else {
-				return nil
-			}
+		public init(rawValue: String) {
+			self.rawValue = rawValue
 		}
 		
 		public init?(rawValue: String?) {

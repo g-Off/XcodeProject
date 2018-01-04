@@ -45,13 +45,11 @@
 		6CD2228D1DDD5C180058C7CD /* XcodeProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CD222831DDD5C180058C7CD /* XcodeProject.framework */; };
 		6CD222921DDD5C180058C7CD /* XcodeProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD222911DDD5C180058C7CD /* XcodeProjectTests.swift */; };
 		6CE0F78A1E0C69FC001DF692 /* PBXObjectIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE0F7891E0C69FC001DF692 /* PBXObjectIDTests.swift */; };
-		6CE0F7BA1E0CAB23001DF692 /* Projects in Resources */ = {isa = PBXBuildFile; fileRef = 6CE0F7B91E0CAB23001DF692 /* Projects */; };
 		6CE346AD1FE9B2E400EFF588 /* PBXGroup+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE346AC1FE9B2E400EFF588 /* PBXGroup+Sorting.swift */; };
 		6CE346AF1FE9B45E00EFF588 /* PBXGroup+FolderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE346AE1FE9B45E00EFF588 /* PBXGroup+FolderSync.swift */; };
 		6CE346B11FE9B4F600EFF588 /* PBXReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE346B01FE9B4F600EFF588 /* PBXReference+Extensions.swift */; };
 		6CE346CC1FECA29100EFF588 /* PBXTarget+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE346CB1FECA29100EFF588 /* PBXTarget+Extensions.swift */; };
 		6CE346CE1FECAF7C00EFF588 /* PBXFileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE346CD1FECAF7C00EFF588 /* PBXFileType.swift */; };
-		6CE346D11FEDF82300EFF588 /* FileTypes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CE346D01FEDF82300EFF588 /* FileTypes.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,20 +97,17 @@
 		6C2644041E11C80A0057CFA4 /* XCConfigurationList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCConfigurationList.swift; sourceTree = "<group>"; };
 		6C2644051E11C80A0057CFA4 /* XCVersionGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCVersionGroup.swift; sourceTree = "<group>"; };
 		6C2644061E11C80A0057CFA4 /* ProjectFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectFile.swift; sourceTree = "<group>"; };
-		6C2644081E11C80A0057CFA4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6C7AFC381FFEF59800AB707B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6C82B6831FFC03180040FD50 /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
 		6CD222831DDD5C180058C7CD /* XcodeProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = XcodeProject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CD2228C1DDD5C180058C7CD /* XcodeProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XcodeProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CD222911DDD5C180058C7CD /* XcodeProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeProjectTests.swift; sourceTree = "<group>"; };
-		6CD222931DDD5C180058C7CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6CE0F7891E0C69FC001DF692 /* PBXObjectIDTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PBXObjectIDTests.swift; sourceTree = "<group>"; };
-		6CE0F7B91E0CAB23001DF692 /* Projects */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Projects; sourceTree = "<group>"; };
 		6CE346AC1FE9B2E400EFF588 /* PBXGroup+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PBXGroup+Sorting.swift"; sourceTree = "<group>"; };
 		6CE346AE1FE9B45E00EFF588 /* PBXGroup+FolderSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PBXGroup+FolderSync.swift"; sourceTree = "<group>"; };
 		6CE346B01FE9B4F600EFF588 /* PBXReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PBXReference+Extensions.swift"; sourceTree = "<group>"; };
 		6CE346CB1FECA29100EFF588 /* PBXTarget+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PBXTarget+Extensions.swift"; sourceTree = "<group>"; };
 		6CE346CD1FECAF7C00EFF588 /* PBXFileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PBXFileType.swift; sourceTree = "<group>"; };
-		6CE346D01FEDF82300EFF588 /* FileTypes.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = FileTypes.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,10 +148,10 @@
 				6C2643E41E11C80A0057CFA4 /* Archiving */,
 				6C2643EB1E11C80A0057CFA4 /* Objects */,
 				6CE346AB1FE9B24000EFF588 /* Objects+Extensions */,
-				6CE346CF1FEDF80900EFF588 /* Resources */,
-				6C2644071E11C80A0057CFA4 /* Supporting Files */,
+				6C7AFC371FFEF59800AB707B /* Supporting Files */,
 			);
-			path = XcodeProject;
+			name = XcodeProject;
+			path = Sources/XcodeProject;
 			sourceTree = "<group>";
 		};
 		6C2643E41E11C80A0057CFA4 /* Archiving */ = {
@@ -188,14 +183,6 @@
 				6C26442B1E1432780057CFA4 /* Targets */,
 			);
 			path = Objects;
-			sourceTree = "<group>";
-		};
-		6C2644071E11C80A0057CFA4 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				6C2644081E11C80A0057CFA4 /* Info.plist */,
-			);
-			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		6C26442A1E1432670057CFA4 /* Build Phases */ = {
@@ -236,6 +223,14 @@
 			path = References;
 			sourceTree = "<group>";
 		};
+		6C7AFC371FFEF59800AB707B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6C7AFC381FFEF59800AB707B /* Info.plist */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		6CD222791DDD5C170058C7CD = {
 			isa = PBXGroup;
 			children = (
@@ -259,20 +254,11 @@
 		6CD222901DDD5C180058C7CD /* XcodeProjectTests */ = {
 			isa = PBXGroup;
 			children = (
-				6CD222931DDD5C180058C7CD /* Info.plist */,
 				6CE0F7891E0C69FC001DF692 /* PBXObjectIDTests.swift */,
 				6CD222911DDD5C180058C7CD /* XcodeProjectTests.swift */,
-				6CD2229F1DDD5CC10058C7CD /* Resources */,
 			);
-			path = XcodeProjectTests;
-			sourceTree = "<group>";
-		};
-		6CD2229F1DDD5CC10058C7CD /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				6CE0F7B91E0CAB23001DF692 /* Projects */,
-			);
-			path = Resources;
+			name = XcodeProjectTests;
+			path = Tests/XcodeProjectTests;
 			sourceTree = "<group>";
 		};
 		6CE346AB1FE9B24000EFF588 /* Objects+Extensions */ = {
@@ -285,14 +271,6 @@
 				6CE346CB1FECA29100EFF588 /* PBXTarget+Extensions.swift */,
 			);
 			path = "Objects+Extensions";
-			sourceTree = "<group>";
-		};
-		6CE346CF1FEDF80900EFF588 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				6CE346D01FEDF82300EFF588 /* FileTypes.plist */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -388,7 +366,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6CE346D11FEDF82300EFF588 /* FileTypes.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,7 +373,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6CE0F7BA1E0CAB23001DF692 /* Projects in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,7 +565,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "XcodeProject/Supporting Files/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/XcodeProject/Supporting Files/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.g-Off.XcodeProject";
@@ -611,7 +587,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "XcodeProject/Supporting Files/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/XcodeProject/Supporting Files/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.g-Off.XcodeProject";
@@ -626,7 +602,6 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XcodeProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.g-Off.XcodeProjectTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -639,7 +614,6 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XcodeProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.g-Off.XcodeProjectTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";

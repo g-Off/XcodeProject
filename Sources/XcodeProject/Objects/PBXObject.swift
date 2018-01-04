@@ -50,7 +50,7 @@ public class PBXObject {
 	}
 	
 	var plistID: PlistID {
-		var plistID = "\(globalID.rawValue)"
+		var plistID = "\(globalID.rawValue.quotedString)"
 		if archiveComment.isEmpty == false {
 			plistID += " /* \(archiveComment) */"
 		}
