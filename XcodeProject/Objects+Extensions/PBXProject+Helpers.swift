@@ -13,7 +13,7 @@ public extension PBXProject {
 }
 public extension PBXProject {
 	func addTarget(name: String, type: PBXNativeTarget.ProductType) {
-		let target = PBXNativeTarget(globalID: PBXObject.ID())
+		let target = PBXNativeTarget(globalID: generateGlobalId())
 		target.name = name
 		target.productName = name
 		target.productType = type

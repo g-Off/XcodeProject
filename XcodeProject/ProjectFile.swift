@@ -38,20 +38,19 @@ public final class ProjectFile {
 	///
 	/// - Parameter url: Path to an xcodeproj file to be opened
 	/// - Returns: A fully parsed project from the provided source or `nil` if an error happened
-	public init?(url: URL) {
+	public init?(url: URL) throws {
 		self.url = url
 		do {
 			self.fileWrapper = try FileWrapper(url: url, options: [])
 		} catch {
 			return nil
 		}
-		if fileWrapper.isDirectory == false {
-			//throw
+		guard fileWrapper.isDirectory else {
+			throw CocoaError.error(.fileReadUnknown)
 		}
 		
 		guard let pbxproj = fileWrapper.fileWrappers?["project.pbxproj"], pbxproj.isRegularFile else {
-			// throw
-			return nil
+			throw CocoaError.error(.fileReadUnknown)
 		}
 		
 		guard let data = pbxproj.regularFileContents else {
@@ -109,8 +108,7 @@ extension ProjectFile {
 		let destination = destination ?? url
 		
 		guard let oldPbxproj = fileWrapper.fileWrappers?["project.pbxproj"], oldPbxproj.isRegularFile else {
-			// throw
-			return
+			throw CocoaError.error(.fileReadUnknown)
 		}
 		
 		let dataStream = DataStreamWriter()

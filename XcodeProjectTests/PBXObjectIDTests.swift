@@ -1,5 +1,5 @@
 //
-//  PBXObject.IDTests.swift
+//  PBXObjectIDTests.swift
 //  XcodeProject
 //
 //  Created by Geoffrey Foster on 2016-12-22.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import XcodeProject
 
-class PBXObject.IDTests: XCTestCase {
+class PBXObjectIDTests: XCTestCase {
 
     func testIDGeneration() {
 		var generator = PBXObject.ID.IDGenerator(userName: "XcodeProject", processId: 50_000, referenceDateFunc: { () -> UInt32 in

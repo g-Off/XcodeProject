@@ -13,7 +13,7 @@ class XcodeProjectTests: XCTestCase {
 	
 	@inline(__always)
 	func assertReadWriteProject(xcodeprojURL: URL) {
-		let projectFile = ProjectFile(url: xcodeprojURL)!
+		let projectFile = try! ProjectFile(url: xcodeprojURL)!
 		
 		let archiver = PBXPListArchiver(projectFile: projectFile)
 		let streamWriter = StringStreamWriter()
@@ -40,7 +40,7 @@ class XcodeProjectTests: XCTestCase {
 		
 		do {
 			try FileManager.default.copyItem(at: xcodeprojURL, to: copyiedProjectURL)
-			let projectFile = ProjectFile(url: copyiedProjectURL)!
+			let projectFile = try! ProjectFile(url: copyiedProjectURL)!
 			projectFile.project.mainGroup.sort(recursive: true, by: .type)
 			try projectFile.save()
 		} catch (let error) {
