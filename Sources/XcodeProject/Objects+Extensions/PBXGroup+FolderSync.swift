@@ -32,6 +32,7 @@ public extension PBXGroup {
 		return fileReference
 	}
 	
+	@discardableResult
 	func addGroup(pathComponent: String) -> PBXGroup {
 		let group = PBXGroup(globalID: PBXObject.ID(), name: nil, path: pathComponent, sourceTree: .group)
 		children.append(group)
@@ -107,11 +108,10 @@ public extension PBXGroup {
 			
 			if recursive {
 				let directories = missing.filter { $0.hasDirectoryPath }
-				let groups = directories.map {
+				directories.forEach {
 					addGroup(pathComponent: $0.lastPathComponent)
 				}
-				
-				groups.forEach {
+				children.flatMap { $0 as? PBXGroup }.forEach {
 					$0.addMissingFiles(recursive: recursive, target: target)
 				}
 			}
