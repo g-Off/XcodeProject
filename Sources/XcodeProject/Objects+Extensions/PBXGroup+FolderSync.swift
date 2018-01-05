@@ -38,8 +38,9 @@ public extension PBXGroup {
 		return group
 	}
 	
-	func sync(recursive: Bool) {
-		addMissingFiles(recursive: recursive)
+	func sync(recursive: Bool, target: PBXTarget? = nil) {
+		let target = target ?? parentProject?.targets.first
+		addMissingFiles(recursive: recursive, target: target)
 		removeMissingFiles(recursive: recursive)
 	}
 	
@@ -80,10 +81,9 @@ public extension PBXGroup {
 		children = newChildren
 	}
 	
-	private func addMissingFiles(recursive: Bool, target: PBXTarget? = nil) {
+	private func addMissingFiles(recursive: Bool, target: PBXTarget?) {
 		guard let url = self.url else { return }
 		print("Adding missing file: \(url)")
-		let target = target ?? parentProject?.targets.first
 		let childPathItems: [(String, PBXReference)] = children.flatMap {
 			guard let childURL = $0.url else { return nil }
 			return (childURL.path, $0)
