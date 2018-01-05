@@ -9,7 +9,7 @@
 import Foundation
 
 public extension PBXGroup {
-	enum SortOption {
+	enum SortOption: String {
 		case name
 		case type
 		
