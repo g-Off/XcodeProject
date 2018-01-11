@@ -81,14 +81,14 @@ public final class ProjectFile {
 		}
 	}
 	
-	public func currentFileWrapper() -> FileWrapper {
+	public func currentFileWrapper() throws -> FileWrapper {
 		let currentFileWrapper = fileWrapper
 		
 		let oldPbxproj = currentFileWrapper.fileWrappers!["project.pbxproj"]!
 		
 		let dataStream = DataStreamWriter()
 		let archiver = PBXPListArchiver(projectFile: self)
-		archiver.write(stream: dataStream)
+		try archiver.write(stream: dataStream)
 		let newPbxproj = FileWrapper(regularFileWithContents: dataStream.data)
 		newPbxproj.preferredFilename = "project.pbxproj"
 		
@@ -113,7 +113,7 @@ extension ProjectFile {
 		
 		let dataStream = DataStreamWriter()
 		let archiver = PBXPListArchiver(projectFile: self)
-		archiver.write(stream: dataStream)
+		try archiver.write(stream: dataStream)
 		let newPbxproj = FileWrapper(regularFileWithContents: dataStream.data)
 		newPbxproj.preferredFilename = "project.pbxproj"
 		

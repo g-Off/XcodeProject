@@ -11,7 +11,7 @@ import Foundation
 public extension PBXGroup {
 	@discardableResult
 	func add(file: URL, createGroupsRecursively: Bool = true) -> PBXFileReference? {
-		guard let url = url else { return nil } // TODO: return an absolute reference? or maybe a project one?
+		guard let url = url else { return nil }
 		var matchingComponentsCount = 0
 		var filePathComponents = file.pathComponents
 		for components in zip(url.pathComponents, filePathComponents) {
