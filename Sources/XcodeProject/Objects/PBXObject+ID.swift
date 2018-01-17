@@ -124,6 +124,12 @@ extension PBXObject.ID: Hashable {
 	}
 }
 
+extension PBXObject.ID: Comparable {
+	public static func <(lhs: PBXObject.ID, rhs: PBXObject.ID) -> Bool {
+		return lhs.rawValue < rhs.rawValue
+	}
+}
+
 extension PropertyList {
 	var globalID: PBXObject.ID? {
 		return PBXObject.ID(rawValue: self.string)

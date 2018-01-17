@@ -8,7 +8,11 @@
 
 public extension PBXProject {
 	func generateGlobalId() -> PBXObject.ID {
-		return PBXObject.ID() // TODO: PBXProject should keep track of its already used ID's and prevent duplicates
+		var objectId = PBXObject.ID()
+		while objects[objectId] != nil {
+			objectId = PBXObject.ID()
+		}
+		return objectId
 	}
 }
 public extension PBXProject {

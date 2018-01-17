@@ -12,7 +12,7 @@ public extension PBXReference {
 	var url: URL? {
 		guard let sourceTree = sourceTree else { return nil }
 		guard let project = parentProject else { return nil }
-		let filePath = path ?? "" // TODO: this is probably not quite right
+		let filePath = path ?? ""
 		switch sourceTree {
 		case .absolute:
 			return URL(fileURLWithPath: filePath)

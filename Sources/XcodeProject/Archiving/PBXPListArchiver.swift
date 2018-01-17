@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol StreamWritable: class {
-	func write(_ string: String)
+	func write(_ string: String) throws
 }
 
 public class ConsoleStreamWriter: StreamWritable {
@@ -80,41 +80,17 @@ struct Format {
 	var indentation: Indentation = Indentation()
 }
 
-struct PBXObjectType: Hashable, CustomStringConvertible {
-	let type: PBXObject.Type
-	
-	init(type: PBXObject.Type) {
-		self.type = type
-	}
-	
-	static func ==(lhs: PBXObjectType, rhs: PBXObjectType) -> Bool {
-		return lhs.type == rhs.type
-	}
-	
-	var hashValue: Int {
-		return String(describing: type).hashValue
-	}
-	
-	var description: String {
-		return String(describing: type)
-	}
-}
-
 struct ObjectMap {
-	let objectMap: [PBXObjectType: [PBXObject]]
+	let objectMap: [String: [PBXObject]]
 	
 	init(project: PBXProject) {
-		var buckets: [PBXObjectType: [PBXObject]] = [:]
+		var buckets: [String: [PBXObject]] = [:]
 		
 		let visitor = ObjectVisitor()
 		visitor.visit(object: project)
 		
-		visitor.types.forEach {
-			buckets[$0] = []
-		}
-		
 		visitor.allObjects.forEach { object in
-			buckets[PBXObjectType(type: type(of: object))]!.append(object)
+			buckets[String(describing: type(of: object)), default: []].append(object)
 		}
 		
 		self.objectMap = buckets
@@ -134,23 +110,23 @@ public final class PBXPListArchiver {
 		archiveDictionary[ProjectFile.RootKey.rootObject] = projectFile.project.plistID
 	}
 	
-	public func write(stream: StreamWritable) {
+	public func write(stream: StreamWritable) throws {
 		var format = Format()
 		
-		stream.write("// !$*UTF8*$!\(format.endOfLine)")
-		stream.write("{\(format.endOfLine)")
+		try stream.write("// !$*UTF8*$!\(format.endOfLine)")
+		try stream.write("{\(format.endOfLine)")
 		format.indentation.increase()
-		archiveDictionary.sorted { (obj1, obj2) in
+		try archiveDictionary.sorted { (obj1, obj2) in
 			return obj1.key < obj2.key
 		}.forEach { (key, value) in
 			guard let value = value else { return }
-			stream.write("\(format.indentation)\(key) = ")
-			stream.write(value.plistRepresentation(format: format))
-			stream.write(";\(format.endOfLine)")
+			try stream.write("\(format.indentation)\(key) = ")
+			try stream.write(value.plistRepresentation(format: format))
+			try stream.write(";\(format.endOfLine)")
 		}
 		format.indentation.decrease()
 		
-		stream.write("}\(format.endOfLine)")
+		try stream.write("}\(format.endOfLine)")
 	}
 }
 
@@ -168,20 +144,12 @@ final class ObjectVisitor {
 		object.visit(self)
 	}
 	
-	var types: [PBXObjectType] {
-		return Array(Set(objectMap.map { PBXObjectType(type: type(of: $0.value)) }))
-	}
-	
 	var allObjects: [PBXObject] {
 		return objects()
 	}
 	
 	func objects<T: PBXObject>() -> [T] {
 		return objectMap.flatMap { return $0.value as? T }
-	}
-	
-	var keys: Set<PBXObject.ID> {
-		return Set(objectMap.keys)
 	}
 }
 

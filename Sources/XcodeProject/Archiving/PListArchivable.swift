@@ -24,7 +24,7 @@ extension ObjectMap: PListArchivable {
 		func plist(objects: [PBXObject], format: Format) -> String {
 			var str = ""
 			objects.sorted { (obj1, obj2) -> Bool in
-				obj1.globalID.rawValue < obj2.globalID.rawValue
+				obj1.globalID < obj2.globalID
 			}.forEach {
 				str += $0.plistRepresentation(format: format)
 			}
@@ -32,7 +32,7 @@ extension ObjectMap: PListArchivable {
 		}
 		var str = "{\n"
 		objectMap.sorted { (obj1, obj2) -> Bool in
-			return obj1.key.description < obj2.key.description
+			return obj1.key < obj2.key
 		}.forEach { (key, value) in
 			str += "\n/* Begin \(key) section */\n"
 			var format = format
