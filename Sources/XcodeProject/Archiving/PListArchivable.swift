@@ -54,7 +54,7 @@ extension NSString: PListArchivable {
 
 extension NSDictionary: PListArchivable {
 	func plistRepresentation(format: Format) -> String {
-		return (self as! [AnyHashable: Any]).plistRepresentation(format: format)
+		return (self as! [String: Any]).plistRepresentation(format: format)
 	}
 }
 
@@ -186,15 +186,15 @@ extension Dictionary: PListArchivable {
 		var plist: [String: String] = [:]
 		
 		for (key, value) in self {
-			guard let key = key as? PListArchivable else {
-				fatalError()
+			guard let archivableKey = key as? PListArchivable else {
+				fatalError("Key `\(key)` of type \(type(of: key)) is not PListArchivable")
 			}
-			guard let thevalue = value as? PListArchivable else {
-				fatalError()
+			guard let archivableValue = value as? PListArchivable else {
+				fatalError("Value `\(value)` of type \(type(of: key)) is not PListArchivable")
 			}
 			format.indentation.increase()
-			let keyString = key.plistRepresentation(format: format)
-			let valueString = thevalue.plistRepresentation(format: format)
+			let keyString = archivableKey.plistRepresentation(format: format)
+			let valueString = archivableValue.plistRepresentation(format: format)
 			
 			plist[keyString] = valueString
 			
