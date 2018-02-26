@@ -46,7 +46,6 @@ public extension PBXGroup {
 	}
 	
 	private func removeMissingFiles(recursive: Bool) {
-		//print("Removing missing file: \(url)")
 		var newChildren: [PBXReference] = []
 		children.forEach {
 			var keepChild = true
@@ -84,7 +83,6 @@ public extension PBXGroup {
 	
 	private func addMissingFiles(recursive: Bool, target: PBXTarget?) {
 		guard let url = self.url else { return }
-		print("Adding missing file: \(url)")
 		let childPathItems: [(String, PBXReference)] = children.flatMap {
 			guard let childURL = $0.url else { return nil }
 			return (childURL.path, $0)
