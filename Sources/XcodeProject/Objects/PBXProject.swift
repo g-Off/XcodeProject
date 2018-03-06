@@ -34,7 +34,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 	var projectDirPath: String?
 	var projectReferences: [(productGroup: PBXObject, projectRef: PBXFileReference)]?
 	var projectRoot: String?
-	var targets: [PBXTarget] = [] {
+	public internal(set) var targets: [PBXTarget] = [] {
 		didSet {
 			targets.forEach { $0.parent = self }
 		}

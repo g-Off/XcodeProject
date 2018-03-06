@@ -18,7 +18,7 @@ public class PBXBuildPhase: PBXObject {
 			files.forEach { $0.parent = self }
 		}
 	}
-	var name: String {
+	public var name: String {
 		return _name ?? type(of: self).defaultName
 	}
 	var runOnlyForDeploymentPostprocessing: Bool?

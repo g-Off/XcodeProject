@@ -76,7 +76,7 @@ extension PBXObject: Hashable {
 	}
 }
 
-protocol PBXContainer {
+public protocol PBXContainer {
 	var name: String? { get }
 }
 

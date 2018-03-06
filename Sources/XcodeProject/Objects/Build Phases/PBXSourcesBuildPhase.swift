@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class PBXSourcesBuildPhase: PBXBuildPhase {
+public final class PBXSourcesBuildPhase: PBXBuildPhase {
 	class override var defaultName: String {
 		return "Compile Sources"
 	}

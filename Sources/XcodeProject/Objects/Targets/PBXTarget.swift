@@ -36,7 +36,7 @@ public class PBXTarget: PBXObject, PBXContainer {
 			dependencies.forEach { $0.parent = self }
 		}
 	}
-	var name: String?
+	public internal(set) var name: String?
 	var productName: String?
 	var productReference: PBXFileReference? {
 		didSet {
