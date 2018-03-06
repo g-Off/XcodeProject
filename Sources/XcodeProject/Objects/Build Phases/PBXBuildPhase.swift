@@ -24,8 +24,16 @@ public class PBXBuildPhase: PBXObject {
 	var runOnlyForDeploymentPostprocessing: Bool?
 	var buildActionMask: Int32 = Int32.max
 	
-	func remove(file: PBXBuildFile) {
+	public func insert(contentsOf buildFiles: [PBXBuildFile], at index: Int) {
+		files.insert(contentsOf: buildFiles, at: index)
+	}
+	
+	public func remove(file: PBXBuildFile) {
 		guard let index = files.index(of: file) else { return }
+		files.remove(at: index)
+	}
+	
+	public func remove(at index: Int) {
 		files.remove(at: index)
 	}
 	

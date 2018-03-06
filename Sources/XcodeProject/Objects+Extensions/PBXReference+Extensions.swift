@@ -9,6 +9,11 @@
 import Foundation
 
 public extension PBXReference {
+	var parentGroup: PBXGroup? {
+		return  parent as? PBXGroup
+	}
+}
+
 public extension PBXReference {
 	var url: URL? {
 		guard let sourceTree = sourceTree else { return nil }
