@@ -56,6 +56,9 @@ extension WorkspaceItem {
 }
 
 public final class Workspace: WorkspaceReference {
+	enum Error: Swift.Error {
+		case invalid
+	}
 	let url: URL
 	public var referenceURL: URL? { return url.deletingLastPathComponent() }
 	public let fileWrapper: FileWrapper
@@ -83,31 +86,22 @@ public final class Workspace: WorkspaceReference {
 		}
 	}
 	
-	public init?(url: URL) {
+	public init(url: URL) throws {
 		self.url = url
-		do {
-			self.fileWrapper = try FileWrapper(url: url, options: [])
-		} catch {
-			return nil
-		}
+		self.fileWrapper = try FileWrapper(url: url, options: [])
 		if fileWrapper.isDirectory == false {
 			//throw
 		}
 		
-		guard let workspaceData = fileWrapper.fileWrappers?["contents.xcworkspacedata"], workspaceData.isRegularFile else {
-			// throw
-			return nil
+		guard let workspaceData = fileWrapper.fileWrappers?["contents.xcworkspacedata"], workspaceData.isRegularFile,
+			let data = workspaceData.regularFileContents else {
+				throw Error.invalid
 		}
 		
-		guard let data = workspaceData.regularFileContents else { return nil }
-		
-		do {
-			let document = try XMLDocument(data: data, options: [])
-			guard let children = document.rootElement()?.children as? [XMLElement] else { return nil }
-			self.references = children.flatMap {
-				childOf(element: $0, parent: self)
-			}
-		} catch {
+		let document = try XMLDocument(data: data, options: [])
+		guard let children = document.rootElement()?.children as? [XMLElement] else { throw Error.invalid }
+		self.references = children.flatMap {
+			childOf(element: $0, parent: self)
 		}
 	}
 	

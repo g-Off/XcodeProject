@@ -41,8 +41,28 @@ public extension PBXGroup {
 	
 	func sync(recursive: Bool, target: PBXTarget? = nil) {
 		let target = target ?? parentProject?.targets.first
+		removeDuplicateFiles(recursive: recursive)
 		addMissingFiles(recursive: recursive, target: target)
 		removeMissingFiles(recursive: recursive)
+	}
+	
+	private func removeDuplicateFiles(recursive: Bool) {
+		var seen: Set<PBXReference> = []
+		var duplicates: [Int] = []
+		for i in 0..<children.count {
+			let child = children[i]
+			if seen.contains(child) {
+				duplicates.append(i)
+			} else {
+				seen.insert(child)
+				if recursive, let group = child as? PBXGroup {
+					group.removeDuplicateFiles(recursive: recursive)
+				}
+			}
+		}
+		duplicates.reversed().forEach {
+			children.remove(at: $0)
+		}
 	}
 	
 	private func removeMissingFiles(recursive: Bool) {
