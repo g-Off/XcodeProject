@@ -9,6 +9,11 @@
 import Foundation
 
 public final class ProjectFile {
+	enum Error: Swift.Error {
+		case invalid
+		case invalidPlist
+		case missingProject
+	}
 	struct RootKey {
 		static let classes = "classes"
 		static let objects = "objects"
@@ -38,13 +43,9 @@ public final class ProjectFile {
 	///
 	/// - Parameter url: Path to an xcodeproj file to be opened
 	/// - Returns: A fully parsed project from the provided source or `nil` if an error happened
-	public init?(url: URL) throws {
+	public init(url: URL) throws {
 		self.url = url
-		do {
-			self.fileWrapper = try FileWrapper(url: url, options: [])
-		} catch {
-			return nil
-		}
+		self.fileWrapper = try FileWrapper(url: url, options: [])
 		guard fileWrapper.isDirectory else {
 			throw CocoaError.error(.fileReadUnknown)
 		}
@@ -54,31 +55,33 @@ public final class ProjectFile {
 		}
 		
 		guard let data = pbxproj.regularFileContents else {
-			return nil
+			throw Error.invalid
 		}
 
-		do {
-			guard let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else { return nil }
-			guard
-				let archiveVersionString = plist[RootKey.archiveVersion] as? String, let archiveVersion = UInt(archiveVersionString),
-				let objectVersionString = plist[RootKey.objectVersion] as? String, let objectVersionInt = UInt(objectVersionString), let objectVersion = ObjectVersion(rawValue: objectVersionInt),
-				let rootObject = PBXObject.ID(rawValue: plist[RootKey.rootObject] as? String),
-				let classes = plist[RootKey.classes] as? [AnyHashable: Any], classes.isEmpty
-				else {
-					return nil
-			}
-			self.archiveVersion = archiveVersion
-			self.objectVersion = objectVersion
-			self.rootObject = rootObject
-			self.classes = classes
-			guard let objects = plist[RootKey.objects] as? [String: Any] else { return nil }
-			let objectCache = ObjectCache(plist: objects, types: types)
-			guard let project = objectCache.object(for: rootObject) as? PBXProject else { return nil }
-			project.path = url.path
-			self.project = project
-		} catch {
-			return nil
+		guard let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
+			throw Error.invalidPlist
 		}
+		guard
+			let archiveVersionString = plist[RootKey.archiveVersion] as? String, let archiveVersion = UInt(archiveVersionString),
+			let objectVersionString = plist[RootKey.objectVersion] as? String, let objectVersionInt = UInt(objectVersionString), let objectVersion = ObjectVersion(rawValue: objectVersionInt),
+			let rootObject = PBXObject.ID(rawValue: plist[RootKey.rootObject] as? String),
+			let classes = plist[RootKey.classes] as? [AnyHashable: Any], classes.isEmpty
+			else {
+				throw Error.invalidPlist
+		}
+		self.archiveVersion = archiveVersion
+		self.objectVersion = objectVersion
+		self.rootObject = rootObject
+		self.classes = classes
+		guard let objects = plist[RootKey.objects] as? [String: Any] else {
+			throw Error.invalidPlist
+		}
+		let objectCache = ObjectCache(plist: objects, types: types)
+		guard let project = objectCache.object(for: rootObject) as? PBXProject else {
+			throw Error.missingProject
+		}
+		project.path = url.path
+		self.project = project
 	}
 	
 	public func currentFileWrapper() throws -> FileWrapper {
