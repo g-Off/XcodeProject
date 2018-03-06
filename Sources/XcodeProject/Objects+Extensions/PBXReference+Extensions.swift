@@ -9,6 +9,7 @@
 import Foundation
 
 public extension PBXReference {
+public extension PBXReference {
 	var url: URL? {
 		guard let sourceTree = sourceTree else { return nil }
 		guard let project = parentProject else { return nil }
@@ -35,7 +36,7 @@ public extension PBXReference {
 		case type
 		
 		private func compareName(_ lhs: PBXReference, _ rhs: PBXReference) -> Bool {
-			return lhs.archiveComment.caseInsensitiveCompare(rhs.archiveComment) == .orderedAscending
+			return lhs.archiveComment.localizedStandardCompare(rhs.archiveComment) == .orderedAscending
 		}
 		
 		private func compareType(_ lhs: PBXReference, _ rhs: PBXReference) -> Bool {
