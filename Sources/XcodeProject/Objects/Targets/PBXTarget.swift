@@ -79,13 +79,13 @@ public class PBXTarget: PBXObject, PBXContainer {
 		self.productName = productName
 		self.productReference = objectCache.object(for: PBXObject.ID(rawValue: plist["productReference"]?.string)) as? PBXFileReference
 		self.buildConfigurationList = buildConfigurationList
-		self.buildPhases = buildPhases.flatMap {
+		self.buildPhases = buildPhases.compactMap {
 			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXBuildPhase
 		}
-		self.buildRules = plist["buildRules"]?.array?.flatMap {
+		self.buildRules = plist["buildRules"]?.array?.compactMap {
 			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXBuildRule
 		}
-		self.dependencies = dependencies.flatMap {
+		self.dependencies = dependencies.compactMap {
 			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXTargetDependency
 		}
 	}

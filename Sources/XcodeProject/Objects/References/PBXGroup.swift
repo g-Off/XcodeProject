@@ -31,7 +31,7 @@ public class PBXGroup: PBXReference {
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.children = plist["children"]?.array?.map { return PBXObject.ID(rawValue: $0) }.flatMap { objectCache.object(for: $0) as? PBXReference } ?? []
+		self.children = plist["children"]?.array?.map { return PBXObject.ID(rawValue: $0) }.compactMap { objectCache.object(for: $0) as? PBXReference } ?? []
 	}
 	
 	override func visit(_ visitor: ObjectVisitor) {

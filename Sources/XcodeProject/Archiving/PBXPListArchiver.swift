@@ -149,7 +149,7 @@ final class ObjectVisitor {
 	}
 	
 	func objects<T: PBXObject>() -> [T] {
-		return objectMap.flatMap { return $0.value as? T }
+		return objectMap.compactMap { return $0.value as? T }
 	}
 }
 

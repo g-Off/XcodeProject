@@ -103,7 +103,7 @@ public extension PBXGroup {
 	
 	private func addMissingFiles(recursive: Bool, target: PBXTarget?) {
 		guard let url = self.url else { return }
-		let childPathItems: [(String, PBXReference)] = children.flatMap {
+		let childPathItems: [(String, PBXReference)] = children.compactMap {
 			guard let childURL = $0.url else { return nil }
 			return (childURL.path, $0)
 		}
@@ -114,7 +114,7 @@ public extension PBXGroup {
 				return childPathMap[$0.path] == nil
 			}
 			let files = missing.filter { !$0.hasDirectoryPath }
-			let additionalFiles = files.flatMap {
+			let additionalFiles = files.compactMap {
 				add(file: $0)
 			}
 			
@@ -129,7 +129,7 @@ public extension PBXGroup {
 				directories.forEach {
 					addGroup(pathComponent: $0.lastPathComponent)
 				}
-				children.flatMap { $0 as? PBXGroup }.forEach {
+				children.compactMap { $0 as? PBXGroup }.forEach {
 					$0.addMissingFiles(recursive: recursive, target: target)
 				}
 			}

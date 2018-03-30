@@ -27,7 +27,7 @@ extension PBXObject {
 		}
 		
 		static func ids(from strings: [String]?) -> [PBXObject.ID]? {
-			return strings?.flatMap({ return PBXObject.ID(rawValue: $0) })
+			return strings?.compactMap { return PBXObject.ID(rawValue: $0) }
 		}
 		
 		private static var generator: IDGenerator = IDGenerator()
