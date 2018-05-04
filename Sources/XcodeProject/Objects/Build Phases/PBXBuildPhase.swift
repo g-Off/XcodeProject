@@ -58,7 +58,7 @@ public class PBXBuildPhase: PBXObject {
 			fatalError()
 		}
 		self._name = plist["name"]?.string
-		self.files = files.flatMap {
+		self.files = files.compactMap {
 			let file: PBXBuildFile? = objectCache.object(for: PBXObject.ID(rawValue: $0))
 			return file
 		}

@@ -15,7 +15,7 @@ public extension PBXGroup {
 	
 	func sort(recursive: Bool, by areInIncreasingOrder: (PBXReference, PBXReference) -> Bool) {
 		if recursive {
-			children.flatMap { return $0 as? PBXGroup }.forEach {
+			children.compactMap { return $0 as? PBXGroup }.forEach {
 				$0.sort(recursive: recursive, by: areInIncreasingOrder)
 			}
 		}

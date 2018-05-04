@@ -27,14 +27,18 @@ class XcodeProjectTests: XCTestCase {
 	
 	@inline(__always)
 	func assertReadWriteProject(url: URL) throws {
-		guard let projectFile = try ProjectFile(url: url) else {
-			XCTFail("Could not load project at \(url.path)")
+		guard let projectFile = try? ProjectFile(url: url) else {
+			XCTFail("Failed to create ProjectFile")
 			return
 		}
 		
 		let archiver = PBXPListArchiver(projectFile: projectFile)
 		let streamWriter = StringStreamWriter()
-		archiver.write(stream: streamWriter)
+		do {
+			try archiver.write(stream: streamWriter)
+		} catch {
+			XCTFail("Archiver write failed")
+		}
 		
 		let url = URL(fileURLWithPath: "project.pbxproj", relativeTo: projectFile.url)
 		let data = try! Data(contentsOf: url)
@@ -58,7 +62,7 @@ class XcodeProjectTests: XCTestCase {
 		
 		do {
 			try FileManager.default.copyItem(at: selfPath, to: copiedProjectURL)
-			let projectFile = try! ProjectFile(url: copiedProjectURL)!
+			let projectFile = try ProjectFile(url: copiedProjectURL)
 			projectFile.project.mainGroup.sort(recursive: true, by: .type)
 			try projectFile.save()
 		} catch (let error) {

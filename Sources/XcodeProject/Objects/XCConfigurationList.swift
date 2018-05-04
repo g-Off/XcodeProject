@@ -45,7 +45,7 @@ final class XCConfigurationList: PBXObject {
 				fatalError()
 		}
 		
-		self.buildConfigurations = buildConfigurations.flatMap { objectCache.object(for: $0) }
+		self.buildConfigurations = buildConfigurations.compactMap { objectCache.object(for: $0) }
 		self.defaultConfigurationIsVisible = Int(defaultConfigurationIsVisibleString) != 0
 		self.defaultConfigurationName = plist["defaultConfigurationName"]?.string
 	}

@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol WorkspaceReference: class {
-	weak var parent: WorkspaceReference? { get }
+	var parent: WorkspaceReference? { get }
 	var referenceURL: URL? { get }
 }
 
@@ -100,7 +100,7 @@ public final class Workspace: WorkspaceReference {
 		
 		let document = try XMLDocument(data: data, options: [])
 		guard let children = document.rootElement()?.children as? [XMLElement] else { throw Error.invalid }
-		self.references = children.flatMap {
+		self.references = children.compactMap {
 			childOf(element: $0, parent: self)
 		}
 	}
@@ -116,7 +116,7 @@ public final class Workspace: WorkspaceReference {
 			guard let location = element.attribute(forName: "location")?.objectValue as? String else { return nil }
 			guard let name = element.attribute(forName: "name")?.objectValue as? String else { return nil }
 			let group = GroupReference(location: location, name: name, children: [], parent: parent)
-			group.children = childrenElements.flatMap {
+			group.children = childrenElements.compactMap {
 				childOf(element: $0, parent: group)
 			}
 			return group

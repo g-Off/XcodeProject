@@ -97,7 +97,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		self.projectDirPath = projectDirPath
 		
 		if let projectReferences = plist["projectReferences"]?.object as? [[String: String]] {
-			self.projectReferences = projectReferences.flatMap { projectReference in
+			self.projectReferences = projectReferences.compactMap { projectReference in
 				guard
 					let projectRefId = PBXObject.ID(rawValue: projectReference["ProjectRef"]),
 					let projectRef = objectCache.object(for: projectRefId) as? PBXFileReference,
@@ -112,7 +112,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		}
 		
 		self.projectRoot = projectRoot
-		self.targets = targets.flatMap {
+		self.targets = targets.compactMap {
 			let target: PBXTarget? = objectCache.object(for: PBXObject.ID(rawValue: $0))
 			return target
 		}
