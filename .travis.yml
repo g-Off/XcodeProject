@@ -1,2 +1,5 @@
 language: swift
 osx_image: xcode9.3
+xcode_project: XcodeProject.xcodeproj
+xcode_scheme: XcodeProject
+xcode_sdk: macosx10.13
