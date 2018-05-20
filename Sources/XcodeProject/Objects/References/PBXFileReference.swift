@@ -14,7 +14,7 @@ public final class PBXFileReference: PBXReference {
 		case explicit(String)
 		case unknown
 		
-		static func from (_ plist: PropertyList) -> FileType {
+		static func from(_ plist: PropertyList) -> FileType {
 			if let lastKnownFileType = plist["lastKnownFileType"]?.string {
 				return .lastKnown(lastKnownFileType)
 			} else if let explicitFileType = plist["explicitFileType"]?.string {
