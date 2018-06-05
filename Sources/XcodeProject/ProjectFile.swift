@@ -27,6 +27,7 @@ public final class ProjectFile {
 		case xcode32 = 46
 		case xcode63 = 47
 		case xcode8 = 48
+		case xcode93 = 50
 	}
 	
 	var archiveVersion: UInt = 1
