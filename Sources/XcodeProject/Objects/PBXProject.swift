@@ -21,6 +21,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		case xcode6_3 = "Xcode 6.3"
 		case xcode8_0 = "Xcode 8.0"
 		case xcode9_3 = "Xcode 9.3"
+		case xcode_10 = "Xcode 10.0"
 	}
 	var compatibilityVersion: CompatibilityVersion = .xcode8_0
 	var developmentRegion: String = "English"
