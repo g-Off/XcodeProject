@@ -118,3 +118,13 @@ public class PBXTarget: PBXObject, PBXContainer {
 		return plist
 	}
 }
+
+extension PBXTarget {
+	public var resourcesBuildPhase: PBXResourcesBuildPhase? {
+		return buildPhases(type: PBXResourcesBuildPhase.self).first
+	}
+	
+	private func buildPhases<T: PBXBuildPhase>(type: T.Type) -> [T] {
+		return buildPhases.compactMap { $0 as? T }
+	}
+}
