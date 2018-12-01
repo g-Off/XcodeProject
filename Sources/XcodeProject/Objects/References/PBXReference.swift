@@ -24,9 +24,9 @@ public class PBXReference: PBXObject {
 		case crlf = 2
 	}
 	
-	var path: String?
-	var name: String?
-	var sourceTree: SourceTree?
+	public internal(set) var path: String?
+	public internal(set) var name: String?
+	public internal(set) var sourceTree: SourceTree?
     var usesTabs: Bool?
 	var tabWidth: Int?
 	var lineEnding: LineEnding?
