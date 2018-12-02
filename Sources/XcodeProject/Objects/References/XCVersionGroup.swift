@@ -28,7 +28,7 @@ public final class XCVersionGroup: PBXGroup {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let currentVersion = objectCache.object(for: PBXObject.ID(rawValue: plist["currentVersion"]?.string)) as? PBXFileReference,
+			let currentVersion = objectCache.object(for: PBXGlobalID(rawValue: plist["currentVersion"]?.string)) as? PBXFileReference,
 			let versionGroupType = plist["versionGroupType"]?.string
 			else {
 				fatalError()

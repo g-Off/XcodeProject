@@ -34,7 +34,7 @@ public final class ProjectFile {
 	var archiveVersion: UInt = 1
 	var objectVersion: ObjectVersion = .xcode8
 	var classes: [AnyHashable: Any] = [:]
-	var rootObject: PBXObject.ID
+	var rootObject: PBXGlobalID
 	/// The root project structure
 	public private(set) var project: PBXProject
 	
@@ -66,7 +66,7 @@ public final class ProjectFile {
 		guard
 			let archiveVersionString = plist[RootKey.archiveVersion] as? String, let archiveVersion = UInt(archiveVersionString),
 			let objectVersionString = plist[RootKey.objectVersion] as? String, let objectVersionInt = UInt(objectVersionString), let objectVersion = ObjectVersion(rawValue: objectVersionInt),
-			let rootObject = PBXObject.ID(rawValue: plist[RootKey.rootObject] as? String),
+			let rootObject = PBXGlobalID(rawValue: plist[RootKey.rootObject] as? String),
 			let classes = plist[RootKey.classes] as? [AnyHashable: Any], classes.isEmpty
 			else {
 				throw Error.invalidPlist

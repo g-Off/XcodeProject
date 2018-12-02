@@ -7,10 +7,10 @@
 //
 
 public extension PBXProject {
-	func generateGlobalId() -> PBXObject.ID {
-		var objectId = PBXObject.ID()
+	func generateGlobalId() -> PBXGlobalID {
+		var objectId = PBXGlobalID()
 		while objects[objectId] != nil {
-			objectId = PBXObject.ID()
+			objectId = PBXGlobalID()
 		}
 		return objectId
 	}

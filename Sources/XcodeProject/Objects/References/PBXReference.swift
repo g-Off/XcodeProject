@@ -52,11 +52,11 @@ public class PBXReference: PBXObject {
 		return ""
 	}
 	
-	public required init(globalID: PBXObject.ID) {
+	public required init(globalID: PBXGlobalID) {
 		super.init(globalID: globalID)
 	}
 	
-	public required init(globalID: PBXObject.ID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
+	public required init(globalID: PBXGlobalID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
 		super.init(globalID: globalID)
 		self.name = name
 		self.path = path
