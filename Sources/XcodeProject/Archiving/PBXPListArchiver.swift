@@ -131,8 +131,8 @@ public final class PBXPListArchiver {
 }
 
 final class ObjectVisitor {
-	private var objectMap: [PBXObject.ID: PBXObject] = [:]
-	private var visited = Set<PBXObject.ID>()
+	private var objectMap: [PBXGlobalID: PBXObject] = [:]
+	private var visited = Set<PBXGlobalID>()
 	
 	func visit(object: PBXObject?, where predicate: @escaping (_ object: PBXObject) -> Bool = { _ in return true}) {
 		guard let object = object else { return }

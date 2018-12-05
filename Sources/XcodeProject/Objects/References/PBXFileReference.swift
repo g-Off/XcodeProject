@@ -41,12 +41,12 @@ public final class PBXFileReference: PBXReference {
 	public private(set) var fileType: FileType = .unknown
 	public internal(set) var xcLanguageSpecificationIdentifier: String? // TODO: this should be a PBXFileType (xcode.lang.swift)
 	
-	public required init(globalID: PBXObject.ID) {
+	public required init(globalID: PBXGlobalID) {
 		super.init(globalID: globalID)
 	}
 	
-	public required init(globalID: PBXObject.ID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
-		super.init(globalID: PBXObject.ID(), name: name, path: path, sourceTree: sourceTree)
+	public required init(globalID: PBXGlobalID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
+		super.init(globalID: PBXGlobalID(), name: name, path: path, sourceTree: sourceTree)
 		if let path = path, let xcodeType = PBXFileType.fileType(filePath: path)?.xcodeType {
 			self.fileType = .lastKnown(xcodeType)
 			do {

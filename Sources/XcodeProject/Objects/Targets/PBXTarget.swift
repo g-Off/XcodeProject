@@ -66,7 +66,7 @@ public class PBXTarget: PBXObject, PBXContainer {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let buildConfigurationListID = PBXObject.ID(rawValue: plist["buildConfigurationList"]?.string),
+			let buildConfigurationListID = PBXGlobalID(rawValue: plist["buildConfigurationList"]?.string),
 			let buildConfigurationList = objectCache.object(for: buildConfigurationListID) as? XCConfigurationList,
 			let buildPhases = plist["buildPhases"]?.array,
 			let dependencies = plist["dependencies"]?.array,
@@ -77,16 +77,16 @@ public class PBXTarget: PBXObject, PBXContainer {
 		}
 		self.name = name
 		self.productName = productName
-		self.productReference = objectCache.object(for: PBXObject.ID(rawValue: plist["productReference"]?.string)) as? PBXFileReference
+		self.productReference = objectCache.object(for: PBXGlobalID(rawValue: plist["productReference"]?.string)) as? PBXFileReference
 		self.buildConfigurationList = buildConfigurationList
 		self.buildPhases = buildPhases.compactMap {
-			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXBuildPhase
+			return objectCache.object(for: PBXGlobalID(rawValue: $0)) as? PBXBuildPhase
 		}
 		self.buildRules = plist["buildRules"]?.array?.compactMap {
-			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXBuildRule
+			return objectCache.object(for: PBXGlobalID(rawValue: $0)) as? PBXBuildRule
 		}
 		self.dependencies = dependencies.compactMap {
-			return objectCache.object(for: PBXObject.ID(rawValue: $0)) as? PBXTargetDependency
+			return objectCache.object(for: PBXGlobalID(rawValue: $0)) as? PBXTargetDependency
 		}
 	}
 	
@@ -116,5 +116,15 @@ public class PBXTarget: PBXObject, PBXContainer {
 		plist["productName"] = productName
 		plist["productReference"] = productReference?.plistID
 		return plist
+	}
+}
+
+extension PBXTarget {
+	public var resourcesBuildPhase: PBXResourcesBuildPhase? {
+		return buildPhases(type: PBXResourcesBuildPhase.self).first
+	}
+	
+	private func buildPhases<T: PBXBuildPhase>(type: T.Type) -> [T] {
+		return buildPhases.compactMap { $0 as? T }
 	}
 }

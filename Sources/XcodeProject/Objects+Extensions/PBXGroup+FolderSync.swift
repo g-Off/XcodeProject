@@ -27,14 +27,14 @@ public extension PBXGroup {
 				currentGroup = currentGroup.addGroup(pathComponent: $0)
 			}
 		}
-		let fileReference = PBXFileReference(globalID: PBXObject.ID(), path: filePathComponents.last)
+		let fileReference = PBXFileReference(globalID: PBXGlobalID(), path: filePathComponents.last)
 		currentGroup.add(child: fileReference)
 		return fileReference
 	}
 	
 	@discardableResult
 	func addGroup(pathComponent: String) -> PBXGroup {
-		let group = PBXGroup(globalID: PBXObject.ID(), name: nil, path: pathComponent, sourceTree: .group)
+		let group = PBXGroup(globalID: PBXGlobalID(), name: nil, path: pathComponent, sourceTree: .group)
 		children.append(group)
 		return group
 	}

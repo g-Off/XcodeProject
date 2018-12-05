@@ -16,7 +16,7 @@ final class XCConfigurationList: PBXObject {
 	var defaultConfigurationName: String?
 	
 	public convenience init() {
-		self.init(globalID: PBXObject.ID())
+		self.init(globalID: PBXGlobalID())
 		
 		self.buildConfigurations = [
 			XCBuildConfiguration(name: "Debug", buildSettings: BuildSettings([:])),
@@ -39,7 +39,7 @@ final class XCConfigurationList: PBXObject {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let buildConfigurations = PBXObject.ID.ids(from: plist["buildConfigurations"]?.array),
+			let buildConfigurations = PBXGlobalID.ids(from: plist["buildConfigurations"]?.array),
 			let defaultConfigurationIsVisibleString = plist["defaultConfigurationIsVisible"]?.string
 			else {
 				fatalError()

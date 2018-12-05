@@ -9,7 +9,7 @@
 public final class PBXAggregateTarget: PBXTarget {
 	public override func addBuildPhase<T: PBXBuildPhase>() -> T? {
 		if T.self == PBXCopyFilesBuildPhase.self || T.self == PBXShellScriptBuildPhase.self {
-			return T(globalID: PBXObject.ID())
+			return T(globalID: PBXGlobalID())
 		}
 		return nil
 	}

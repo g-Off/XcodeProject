@@ -19,14 +19,14 @@ class ObjectCache {
 		self.types = types
 	}
 	
-	internal var objects: [PBXObject.ID: PBXObject] = [:]
+	internal var objects: [PBXGlobalID: PBXObject] = [:]
 	
-	func object<T: PBXObject>(for globalID: PBXObject.ID?) -> T? {
+	func object<T: PBXObject>(for globalID: PBXGlobalID?) -> T? {
 		guard let globalID = globalID else { return nil }
 		return cached(globalID: globalID, create: true) as? T
 	}
 	
-	private func cached(globalID: PBXObject.ID, create: Bool = false) -> PBXObject? {
+	private func cached(globalID: PBXGlobalID, create: Bool = false) -> PBXObject? {
 		if let existing = objects[globalID] {
 			return existing
 		} else if create {
@@ -35,7 +35,7 @@ class ObjectCache {
 		return nil
 	}
 	
-	private func createObject(globalID: PBXObject.ID) -> PBXObject? {
+	private func createObject(globalID: PBXGlobalID) -> PBXObject? {
 		guard let objectPlist = plist[globalID.rawValue] as? [String: Any] else { return nil }
 		guard let isa = objectPlist["isa"] as? String else { fatalError() }
 		
@@ -51,7 +51,7 @@ class ObjectCache {
 		return object
 	}
 	
-	private func setCached(object: PBXObject?, for globalID: PBXObject.ID) {
+	private func setCached(object: PBXObject?, for globalID: PBXGlobalID) {
 		guard let object = object else {
 			return
 		}

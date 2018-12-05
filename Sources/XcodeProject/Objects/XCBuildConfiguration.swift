@@ -14,7 +14,7 @@ final class XCBuildConfiguration: PBXObject {
 	var baseConfigurationReference: PBXFileReference?
 	
 	public convenience init(name: String, buildSettings: BuildSettings) {
-		self.init(globalID: PBXObject.ID())
+		self.init(globalID: PBXGlobalID())
 		
 		self.name = name
 		self.buildSettings = buildSettings

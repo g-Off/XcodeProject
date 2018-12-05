@@ -24,9 +24,9 @@ public class PBXReference: PBXObject {
 		case crlf = 2
 	}
 	
-	var path: String?
-	var name: String?
-	var sourceTree: SourceTree?
+	public internal(set) var path: String?
+	public internal(set) var name: String?
+	public internal(set) var sourceTree: SourceTree?
     var usesTabs: Bool?
 	var tabWidth: Int?
 	var lineEnding: LineEnding?
@@ -52,11 +52,11 @@ public class PBXReference: PBXObject {
 		return ""
 	}
 	
-	public required init(globalID: PBXObject.ID) {
+	public required init(globalID: PBXGlobalID) {
 		super.init(globalID: globalID)
 	}
 	
-	public required init(globalID: PBXObject.ID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
+	public required init(globalID: PBXGlobalID, name: String? = nil, path: String? = nil, sourceTree: SourceTree? = .group) {
 		super.init(globalID: globalID)
 		self.name = name
 		self.path = path
