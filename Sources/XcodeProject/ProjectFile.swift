@@ -39,7 +39,6 @@ public final class ProjectFile {
 	public private(set) var project: PBXProject
 	
 	let url: URL
-	let fileWrapper: FileWrapper
 	
 	/// Initializes a new project file from the given URL
 	///
@@ -47,18 +46,8 @@ public final class ProjectFile {
 	/// - Returns: A fully parsed project from the provided source or `nil` if an error happened
 	public init(url: URL) throws {
 		self.url = url
-		self.fileWrapper = try FileWrapper(url: url, options: [])
-		guard fileWrapper.isDirectory else {
-			throw CocoaError.error(.fileReadUnknown)
-		}
-		
-		guard let pbxproj = fileWrapper.fileWrappers?["project.pbxproj"], pbxproj.isRegularFile else {
-			throw CocoaError.error(.fileReadUnknown)
-		}
-		
-		guard let data = pbxproj.regularFileContents else {
-			throw Error.invalid
-		}
+		let pbxproj = URL(fileURLWithPath: "project.pbxproj", relativeTo: url)
+		let data = try Data(contentsOf: pbxproj)
 
 		guard let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
 			throw Error.invalidPlist
@@ -85,23 +74,6 @@ public final class ProjectFile {
 		project.path = url.path
 		self.project = project
 	}
-	
-	public func currentFileWrapper() throws -> FileWrapper {
-		let currentFileWrapper = fileWrapper
-		
-		let oldPbxproj = currentFileWrapper.fileWrappers!["project.pbxproj"]!
-		
-		let dataStream = DataStreamWriter()
-		let archiver = PBXPListArchiver(projectFile: self)
-		try archiver.write(stream: dataStream)
-		let newPbxproj = FileWrapper(regularFileWithContents: dataStream.data)
-		newPbxproj.preferredFilename = "project.pbxproj"
-		
-		currentFileWrapper.removeFileWrapper(oldPbxproj)
-		currentFileWrapper.addFileWrapper(newPbxproj)
-		
-		return currentFileWrapper
-	}
 }
 
 extension ProjectFile {
@@ -112,19 +84,10 @@ extension ProjectFile {
 	public func save(to destination: URL? = nil) throws {
 		let destination = destination ?? url
 		
-		guard let oldPbxproj = fileWrapper.fileWrappers?["project.pbxproj"], oldPbxproj.isRegularFile else {
-			throw CocoaError.error(.fileReadUnknown)
-		}
-		
 		let dataStream = DataStreamWriter()
 		let archiver = PBXPListArchiver(projectFile: self)
 		try archiver.write(stream: dataStream)
-		let newPbxproj = FileWrapper(regularFileWithContents: dataStream.data)
-		newPbxproj.preferredFilename = "project.pbxproj"
-		
-		fileWrapper.removeFileWrapper(oldPbxproj)
-		fileWrapper.addFileWrapper(newPbxproj)
-		
-		try fileWrapper.write(to: destination, options: [.atomic], originalContentsURL: nil)
+		let pbxprojURL = URL(fileURLWithPath: "project.pbxproj", relativeTo: destination)
+		try dataStream.data.write(to: pbxprojURL, options: [.atomic])
 	}
 }

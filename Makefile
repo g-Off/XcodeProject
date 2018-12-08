@@ -8,6 +8,9 @@ test:
 	
 xcode:
 	swift package generate-xcodeproj --xcconfig-overrides=overrides.xcconfig
+	
+linux:
+	swift test --generate-linuxmain $(SWIFTC_FLAGS)
 
 clean:
 	swift build --clean

@@ -42,17 +42,13 @@ extension PBXGlobalID {
 		private var lastTime: UInt32 = 0
 		private var firstSequence: UInt16 = 0
 		
-		init(userName: String = NSUserName(), processId: pid_t = getpid(), random: inout RandomNumberGenerator, referenceDateGenerator: @escaping () -> Date = Generator.referenceDate) {
+		init(userName: String = NSUserName(), processId: pid_t = getpid(), hostId: UInt32, random: UInt16, referenceDateGenerator: @escaping () -> Date = Generator.referenceDate) {
 			self.referenceDateGenerator = referenceDateGenerator
 			
-			var hostId: UInt32 = UInt32(gethostid())
-			if hostId == 0 {
-				hostId = random.next()
-			}
 			self.gid = GlobalIdentifier(
 				userHash: Generator.userHash(userName: userName),
 				pidByte: UInt8(truncatingIfNeeded: processId),
-				random: random.next(),
+				random: random,
 				time: 0,
 				hostShift: UInt8(truncatingIfNeeded: (hostId >> 0x10) & 0xff),
 				hostHigh: UInt8(truncatingIfNeeded: (hostId & 0xff00) >> 0x8),

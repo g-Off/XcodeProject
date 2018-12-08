@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6C2643E01E11C0E50057CFA4 /* GameplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C2643DF1E11C0E50057CFA4 /* GameplayKit.framework */; };
 		6C2643E21E11C16A0057CFA4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C2643E11E11C16A0057CFA4 /* Foundation.framework */; };
 		6C2644091E11C80A0057CFA4 /* PBXPListArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2643E51E11C80A0057CFA4 /* PBXPListArchiver.swift */; };
 		6C26440A1E11C80A0057CFA4 /* PBXPListUnarchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2643E61E11C80A0057CFA4 /* PBXPListUnarchiver.swift */; };
@@ -118,7 +117,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6C2643E21E11C16A0057CFA4 /* Foundation.framework in Frameworks */,
-				6C2643E01E11C0E50057CFA4 /* GameplayKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

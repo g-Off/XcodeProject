@@ -61,7 +61,6 @@ public final class Workspace: WorkspaceReference {
 	}
 	let url: URL
 	public var referenceURL: URL? { return url.deletingLastPathComponent() }
-	public let fileWrapper: FileWrapper
 	public var references: [WorkspaceItem] = []
 	
 	public class FileReference: WorkspaceItem {
@@ -88,15 +87,8 @@ public final class Workspace: WorkspaceReference {
 	
 	public init(url: URL) throws {
 		self.url = url
-		self.fileWrapper = try FileWrapper(url: url, options: [])
-		if fileWrapper.isDirectory == false {
-			//throw
-		}
-		
-		guard let workspaceData = fileWrapper.fileWrappers?["contents.xcworkspacedata"], workspaceData.isRegularFile,
-			let data = workspaceData.regularFileContents else {
-				throw Error.invalid
-		}
+		let workspaceFileURL = URL(fileURLWithPath: "contents.xcworkspacedata", relativeTo: url)
+		let data = try Data(contentsOf: workspaceFileURL)
 		
 		let document = try XMLDocument(data: data, options: [])
 		guard let children = document.rootElement()?.children as? [XMLElement] else { throw Error.invalid }

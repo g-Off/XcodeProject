@@ -67,8 +67,8 @@ public class PBXObject {
 }
 
 extension PBXObject: Hashable {
-	public var hashValue: Int {
-		return globalID.hashValue
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(globalID)
 	}
 	
 	public static func ==(lhs: PBXObject, rhs: PBXObject) -> Bool {
