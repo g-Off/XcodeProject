@@ -10,14 +10,6 @@ import XCTest
 @testable import XcodeProject
 
 class PBXGlobalIDTests: XCTestCase {
-	struct FakeRandomGenerator: RandomNumberGenerator {
-		private var value: UInt64 = 1234567890
-		mutating func next() -> UInt64 {
-			defer { value += 1 }
-			return value
-		}
-	}
-	
 	func mockDateGenerator() -> Date {
 		let components = DateComponents(timeZone: TimeZone(secondsFromGMT: 0), year: 2014, month: 07, day: 29, hour: 17, minute: 04, second: 20)
 		let date = Calendar(identifier: .gregorian).date(from: components)
@@ -25,9 +17,7 @@ class PBXGlobalIDTests: XCTestCase {
 	}
 	
     func testIDGeneration() {
-		let processId: pid_t = 50_000
-		var randomNumberGenerator: RandomNumberGenerator = FakeRandomGenerator()
-		var generator = PBXGlobalID.Generator(userName: "XcodeProject", processId: processId, random: &randomNumberGenerator, referenceDateGenerator: mockDateGenerator)
+		var generator = PBXGlobalID.Generator(userName: "XcodeProject", processId: 50_000, hostId: 1234567890, random: 723, referenceDateGenerator: mockDateGenerator)
 		XCTAssertEqual("8C5002D419880B94009602D2", generator.next())
 		XCTAssertEqual("8C5002D519880B94009602D2", generator.next())
 		XCTAssertEqual("8C5002D619880B94009602D2", generator.next())

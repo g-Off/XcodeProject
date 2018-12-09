@@ -27,13 +27,19 @@ public struct PBXGlobalID: RawRepresentable {
 		return strings?.compactMap { return PBXGlobalID(rawValue: $0) }
 	}
 	
-	private static var randomNumberGenerator: RandomNumberGenerator = SystemRandomNumberGenerator()
-	private static var generator: PBXGlobalID.Generator = PBXGlobalID.Generator(random: &randomNumberGenerator)
+	private static var generator: PBXGlobalID.Generator = {
+		var randomNumberGenerator: RandomNumberGenerator = SystemRandomNumberGenerator()
+		var hostId: UInt32 = UInt32(gethostid())
+		if hostId == 0 {
+			hostId = randomNumberGenerator.next()
+		}
+		return PBXGlobalID.Generator(hostId: hostId, random: randomNumberGenerator.next())
+	}()
 }
 
 extension PBXGlobalID: Hashable {
-	public var hashValue: Int {
-		return rawValue.hashValue
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(rawValue)
 	}
 	
 	public static func ==(lhs: PBXGlobalID, rhs: PBXGlobalID) -> Bool {

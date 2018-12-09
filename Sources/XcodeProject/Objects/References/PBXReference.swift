@@ -33,14 +33,30 @@ public class PBXReference: PBXObject {
 	var indentWidth: Int?
 	
 	var buildFiles: [PBXBuildFile] {
-		return _buildFiles.allObjects
+		return _buildFiles.compactMap { $0.item }
 	}
-	private var _buildFiles = NSHashTable<PBXBuildFile>.weakObjects()
+	
+	private struct WeakBuildFile: Hashable {
+		weak var item: PBXBuildFile?
+		
+		static func ==(lhs: WeakBuildFile, rhs: WeakBuildFile) -> Bool {
+			return lhs.item == rhs.item
+		}
+		
+		func hash(into hasher: inout Hasher) {
+			hasher.combine(item)
+		}
+	}
+	
+	private var _buildFiles: Array<WeakBuildFile> = []
+	
 	func register(buildFile: PBXBuildFile) {
-		_buildFiles.add(buildFile)
+		_buildFiles.removeAll { $0.item == nil }
+		_buildFiles.append(WeakBuildFile(item: buildFile))
 	}
+	
 	func unregister(buildFile: PBXBuildFile) {
-		_buildFiles.remove(buildFile)
+		_buildFiles.removeAll { $0.item == nil || $0.item == buildFile }
 	}
 	
 	public var displayName: String {

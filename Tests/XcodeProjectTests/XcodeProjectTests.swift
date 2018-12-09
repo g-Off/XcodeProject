@@ -21,27 +21,19 @@ class XcodeProjectTests: XCTestCase {
 	
 	private var selfPath: URL {
 		let fileURL = URL(fileURLWithPath: #file)
-		let projectURL = URL(fileURLWithPath: "../../XcodeProject.xcodeproj", isDirectory: true, relativeTo: fileURL).standardizedFileURL
+		let projectURL = URL(fileURLWithPath: "../../XcodeProject.xcodeproj/", isDirectory: true, relativeTo: fileURL).standardizedFileURL
 		return projectURL
 	}
 	
 	@inline(__always)
 	func assertReadWriteProject(url: URL) throws {
-		guard let projectFile = try? ProjectFile(url: url) else {
-			XCTFail("Failed to create ProjectFile")
-			return
-		}
-		
+		let projectFile = try ProjectFile(url: url)
 		let archiver = PBXPListArchiver(projectFile: projectFile)
 		let streamWriter = StringStreamWriter()
-		do {
-			try archiver.write(stream: streamWriter)
-		} catch {
-			XCTFail("Archiver write failed")
-		}
+		try archiver.write(stream: streamWriter)
 		
 		let url = URL(fileURLWithPath: "project.pbxproj", relativeTo: projectFile.url)
-		let data = try! Data(contentsOf: url)
+		let data = try Data(contentsOf: url)
 		let string = String(data: data, encoding: .utf8)
 		
 		if streamWriter.string != string {
@@ -57,17 +49,12 @@ class XcodeProjectTests: XCTestCase {
 		//try assertReadWriteProject(url: selfPath)
 	}
 	
-	func testSelfSave() {
-		let copiedProjectURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(UUID().uuidString).xcodeproj")
-		
-		do {
-			try FileManager.default.copyItem(at: selfPath, to: copiedProjectURL)
-			let projectFile = try ProjectFile(url: copiedProjectURL)
-			projectFile.project.mainGroup.sort(recursive: true, by: .type)
-			try projectFile.save()
-		} catch (let error) {
-			XCTFail(error.localizedDescription)
-		}
+	func testSelfSave() throws {
+		let copiedProjectURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(UUID().uuidString).xcodeproj", isDirectory: true)
+		try FileManager.default.copyItem(at: selfPath, to: copiedProjectURL)
+		let projectFile = try ProjectFile(url: copiedProjectURL)
+		projectFile.project.mainGroup.sort(recursive: true, by: .type)
+		try projectFile.save()
 	}
 	
 	func testAggregateTarget() throws {
@@ -77,13 +64,9 @@ class XcodeProjectTests: XCTestCase {
 	func testPrivateProjectFolder() throws {
 		guard let path = ProcessInfo.processInfo.environment["PRIVATE_PROJECTS"], !path.isEmpty else { return }
 		let privateProjectsDir = URL(fileURLWithPath: path, isDirectory: true)
-		do {
-			let files = try FileManager.default.contentsOfDirectory(at: privateProjectsDir, includingPropertiesForKeys: nil)
-			try files.filter { return $0.pathExtension == "xcodeproj" }.forEach {
-				try assertReadWriteProject(url: $0)
-			}
-		} catch {
-			XCTFail()
+		let files = try FileManager.default.contentsOfDirectory(at: privateProjectsDir, includingPropertiesForKeys: nil)
+		try files.filter { return $0.pathExtension == "xcodeproj" }.forEach {
+			try assertReadWriteProject(url: $0)
 		}
 	}
 }
