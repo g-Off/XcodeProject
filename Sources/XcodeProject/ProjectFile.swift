@@ -87,7 +87,17 @@ extension ProjectFile {
 		let dataStream = DataStreamWriter()
 		let archiver = PBXPListArchiver(projectFile: self)
 		try archiver.write(stream: dataStream)
+		
+		#if os(macOS)
+		let wrapper = try FileWrapper(url: url)
+		if let projectWrapper = wrapper.fileWrappers?["project.pbxproj"] {
+			wrapper.removeFileWrapper(projectWrapper)
+		}
+		wrapper.addRegularFile(withContents: dataStream.data, preferredFilename: "project.pbxproj")
+		try wrapper.write(to: destination, options: [.atomic], originalContentsURL: destination)
+		#else
 		let pbxprojURL = URL(fileURLWithPath: "project.pbxproj", relativeTo: destination)
 		try dataStream.data.write(to: pbxprojURL, options: [.atomic])
+		#endif
 	}
 }
