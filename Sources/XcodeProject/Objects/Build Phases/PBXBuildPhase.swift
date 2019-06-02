@@ -29,7 +29,7 @@ public class PBXBuildPhase: PBXObject {
 	}
 	
 	public func remove(file: PBXBuildFile) {
-		guard let index = files.index(of: file) else { return }
+		guard let index = files.firstIndex(of: file) else { return }
 		files.remove(at: index)
 	}
 	

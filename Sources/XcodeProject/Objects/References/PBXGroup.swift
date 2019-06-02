@@ -54,7 +54,7 @@ public class PBXGroup: PBXReference {
 	
 	public func remove(child: PBXReference) {
 		guard child.parent == self else { return }
-		guard let index = children.index(of: child) else { return }
+		guard let index = children.firstIndex(of: child) else { return }
 		children.remove(at: index)
 		self.child(child, didMoveTo: nil)
 	}

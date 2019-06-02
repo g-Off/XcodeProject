@@ -26,7 +26,7 @@ extension WorkspaceItem {
 		print(location)
 		var scheme: String = ""
 		var path: String = location
-		if let index = location.index(of: ":") {
+		if let index = location.firstIndex(of: ":") {
 			scheme = String(location[..<index])
 			path = String(location[location.index(after: index)...])
 		}
