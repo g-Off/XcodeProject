@@ -75,7 +75,7 @@ extension String: PListArchivable {
 	var quotedString: String {
 		var string = self
 		
-		let characterSet = CharacterSet(charactersIn: "+-<>@$()=,:").union(CharacterSet.whitespacesAndNewlines)
+		let characterSet = CharacterSet(charactersIn: "+-<>@$()=,:~").union(CharacterSet.whitespacesAndNewlines)
 		
 		var requiresQuotes = string.isEmpty
 		if !requiresQuotes {
