@@ -7,7 +7,10 @@
 
 import Foundation
 
-public struct PBXGlobalID: RawRepresentable {
+public struct PBXGlobalID: RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
+	public var description: String { return rawValue }
+	public var debugDescription: String { return rawValue }
+	
 	public let rawValue: String
 	
 	public init(rawValue: String) {

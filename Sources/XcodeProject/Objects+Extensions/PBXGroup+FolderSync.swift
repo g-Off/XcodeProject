@@ -42,6 +42,7 @@ public extension PBXGroup {
 	func sync(recursive: Bool, target: PBXTarget? = nil) {
 		let target = target ?? parentProject?.targets.first
 		removeDuplicateFiles(recursive: recursive)
+		removeDuplicateFilesByPath(recursive: recursive)
 		addMissingFiles(recursive: recursive, target: target)
 		removeMissingFiles(recursive: recursive)
 	}
@@ -62,6 +63,27 @@ public extension PBXGroup {
 		}
 		duplicates.reversed().forEach {
 			children.remove(at: $0)
+		}
+	}
+	
+	private func removeDuplicateFilesByPath(recursive: Bool) {
+		var itemsByPath: [String: [PBXReference]] = [:]
+		for i in 0..<children.count {
+			let child = children[i]
+			if let path = child.path {
+				itemsByPath[path, default: []].append(child)
+			}
+			if recursive, let group = child as? PBXGroup {
+				group.removeDuplicateFilesByPath(recursive: recursive)
+			}
+		}
+		let duplicatePathItems = itemsByPath.filter { $0.value.count > 1 }
+		duplicatePathItems.forEach { (path, references) in
+			references.forEach { reference in
+				if reference.buildFiles.isEmpty {
+					remove(child: reference)
+				}
+			}
 		}
 	}
 	
@@ -103,6 +125,7 @@ public extension PBXGroup {
 	
 	private func addMissingFiles(recursive: Bool, target: PBXTarget?) {
 		guard let url = self.url else { return }
+		
 		let childPathItems: [(String, PBXReference)] = children.compactMap {
 			guard let childURL = $0.url else { return nil }
 			return (childURL.path, $0)
