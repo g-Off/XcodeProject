@@ -7,7 +7,14 @@
 //
 
 final class PBXContainerItemProxy: PBXObject {
-	enum ProxyType: Int8 {
+	private enum CodingKeys: String, CodingKey {
+		case containerPortal
+		case proxyType
+		case remoteGlobalIDString
+		case remoteInfo
+	}
+
+	enum ProxyType: Int8, Encodable {
 		case nativeTarget = 1
 		case reference = 2
 		
@@ -44,12 +51,12 @@ final class PBXContainerItemProxy: PBXObject {
 		visitor.visit(object: containerPortal)
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["containerPortal"] = containerPortal?.plistID
-		plist["proxyType"] = proxyType?.rawValue
-		plist["remoteGlobalIDString"] = remoteGlobalIDString
-		plist["remoteInfo"] = remoteInfo
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(containerPortal, forKey: .containerPortal)
+		try container.encodeIfPresent(proxyType, forKey: .proxyType)
+		try container.encodeIfPresent(remoteGlobalIDString, forKey: .remoteGlobalIDString)
+		try container.encodeIfPresent(remoteInfo, forKey: .remoteInfo)
 	}
 }

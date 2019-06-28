@@ -7,6 +7,11 @@
 //
 
 public final class PBXReferenceProxy: PBXReference {
+	private enum CodingKeys: String, CodingKey {
+		case fileType
+		case remoteRef
+	}
+
 	var fileType: String? //PBXFileType
 	var remoteRef: PBXContainerItemProxy? {
 		didSet {
@@ -36,10 +41,10 @@ public final class PBXReferenceProxy: PBXReference {
 		visitor.visit(object: remoteRef)
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["fileType"] = fileType
-		plist["remoteRef"] = remoteRef?.plistID
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(fileType, forKey: .fileType)
+		try container.encodeIfPresent(remoteRef, forKey: .remoteRef)
 	}
 }

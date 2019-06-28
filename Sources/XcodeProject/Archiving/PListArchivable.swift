@@ -10,7 +10,7 @@ import Foundation
 
 protocol PListArchivable {
 	var archiveInPlistOnSingleLine: Bool { get }
-	func plistRepresentation(format: Format) -> String
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String
 }
 
 extension PListArchivable {
@@ -20,13 +20,13 @@ extension PListArchivable {
 }
 
 extension ObjectMap: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		func plist(objects: [PBXObject], format: Format) -> String {
 			var str = ""
 			objects.sorted { (obj1, obj2) -> Bool in
 				obj1.globalID < obj2.globalID
 			}.forEach {
-				str += $0.plistRepresentation(format: format)
+				str += $0.plistRepresentation(format: format, objectVersion: objectVersion)
 			}
 			return str
 		}
@@ -35,10 +35,9 @@ extension ObjectMap: PListArchivable {
 			return obj1.key < obj2.key
 		}.forEach { (key, value) in
 			str += "\n/* Begin \(key) section */\n"
-			var format = format
-			format.indentation.increase()
-			str += plist(objects: value, format: format)
-			format.indentation.decrease()
+			format.indented {
+				str += plist(objects: value, format: $0)
+			}
 			str += "/* End \(key) section */\n"
 		}
 		str += "\(format.indentation)}"
@@ -47,144 +46,96 @@ extension ObjectMap: PListArchivable {
 }
 
 extension NSString: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		return (self as String).plistRepresentation(format: format)
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		return (self as String).plistRepresentation(format: format, objectVersion: objectVersion)
+	}
+}
+
+extension NSNumber: PListArchivable {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		return "\(self.description)"
 	}
 }
 
 extension NSDictionary: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		return (self as! [String: Any]).plistRepresentation(format: format)
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		return (self as! [String: Any]).plistRepresentation(format: format, objectVersion: objectVersion)
 	}
 }
 
 extension NSArray: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		return (self as! [Any]).plistRepresentation(format: format)
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		return (self as! [Any]).plistRepresentation(format: format, objectVersion: objectVersion)
 	}
 }
 
 extension String: PListArchivable {
-	static let replacements: [(String, String)] = [
-		("\\", "\\\\"),
-		("\"", "\\\""),
-		("\n", "\\n"),
-		("\t", "\\t"),
-		]
 	
-	var quotedString: String {
-		var string = self
-		
-		let characterSet = CharacterSet(charactersIn: "+-<>@$()=,:~").union(CharacterSet.whitespacesAndNewlines)
-		
-		var requiresQuotes = string.isEmpty
-		if !requiresQuotes {
-			for character in string.unicodeScalars where characterSet.contains(character) {
-				requiresQuotes = true
-				break
-			}
-		}
-		
-		String.replacements.forEach {
-			string = string.replacingOccurrences(of: $0.0, with: $0.1)
-		}
-		
-		if requiresQuotes {
-			string = "\"\(string)\""
-		}
-		
-		return string
-	}
-	
-	fileprivate var unquotedString: String {
-		var string = self
-		if let firstRange = string.range(of: ("\""), options: []), firstRange.lowerBound == startIndex,
-			let lastRange = string.range(of: ("\""), options: [.backwards]), lastRange.upperBound == endIndex {
-			string.removeSubrange(lastRange)
-			string.removeSubrange(firstRange)
-		}
-		
-		String.replacements.reversed().forEach {
-			string = string.replacingOccurrences(of: $0.1, with: $0.0)
-		}
-		
-		return string
-	}
-	
-	func plistRepresentation(format: Format) -> String {
-		return self.quotedString
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		return self
 	}
 }
 
 extension UInt: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		return "\(self)"
 	}
 }
 
 extension Int: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		return "\(self)"
 	}
 }
 
 extension Int8: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		return "\(self)"
 	}
 }
 
 extension Int32: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		return "\(self)"
 	}
 }
 
 extension Bool: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		return self ? "1" : "0"
 	}
 }
 
 extension PBXObject: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		let singleLine = archiveInPlistOnSingleLine
-		var subformat = format
-		if singleLine {
-			subformat.startOfLine = ""
-			subformat.endOfLine = " "
-			subformat.indentation.character = ""
-			subformat.indentation.level = 0
-			subformat.indentation.enabled = false
-		}
-		var str = "\(format.indentation)\(self.plistID) = {\(subformat.startOfLine)"
-		
-		subformat.indentation.increase()
-		
-		plistRepresentation.sorted { (obj1, obj2) -> Bool in
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		let objectEncoder = PBXObjectEncoder()
+		objectEncoder.objectVersion = objectVersion
+		guard let encoded = try? objectEncoder.encode(self).sorted(by: { (obj1, obj2) -> Bool in
 			return (obj1.key == "isa") || (obj1.key < obj2.key && obj2.key != "isa")
-		}.forEach { (key, value) in
-			if value == nil { return }
-			guard let value = value as? PListArchivable else {
-				return
-			}
-			
-			str += "\(subformat.indentation)\(key) = \(value.plistRepresentation(format: subformat));\(subformat.endOfLine)"
+		}) else {
+			return ""
 		}
 		
-		subformat.indentation.decrease()
-		str += "\(subformat.indentation)};\n"
+		var str = "\(format.indentation)\(self.plistID) = {"
+		(archiveInPlistOnSingleLine ? Format.singleLine : format).indented { (format) in
+			str += "\(format.startOfLine)"
+			encoded.forEach { (key, value) in
+				guard let value = value as? PListArchivable else { return }
+				str += "\(format.indentation)\(key) = \(value.plistRepresentation(format: format, objectVersion: objectVersion));\(format.endOfLine)"
+			}
+		}
+		if !archiveInPlistOnSingleLine {
+			str += "\(format.indentation)"
+		}
+		str += "};\(format.endOfLine)"
 		return str
 	}
 }
 
 extension Dictionary: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		var format = format
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		var str = "{\(format.startOfLine)"
-		
 		var plist: [String: String] = [:]
-		
 		for (key, value) in self {
 			guard let archivableKey = key as? PListArchivable else {
 				fatalError("Key `\(key)` of type \(type(of: key)) is not PListArchivable")
@@ -192,21 +143,19 @@ extension Dictionary: PListArchivable {
 			guard let archivableValue = value as? PListArchivable else {
 				fatalError("Value `\(value)` of type \(type(of: key)) is not PListArchivable")
 			}
-			format.indentation.increase()
-			let keyString = archivableKey.plistRepresentation(format: format)
-			let valueString = archivableValue.plistRepresentation(format: format)
-			
-			plist[keyString] = valueString
-			
-			format.indentation.decrease()
+			format.indented { (format) in
+				let keyString = archivableKey.plistRepresentation(format: format, objectVersion: objectVersion)
+				let valueString = archivableValue.plistRepresentation(format: format, objectVersion: objectVersion)
+				plist[keyString] = valueString
+			}
 		}
 		
 		plist.sorted {
 			return $0.key.unquotedString < $1.key.unquotedString
 		}.forEach { (keyString, valueString) in
-			format.indentation.increase()
-			str += "\(format.indentation)\(keyString) = \(valueString);\(format.endOfLine)"
-			format.indentation.decrease()
+			format.indented { (format) in
+				str += "\(format.indentation)\(keyString) = \(valueString);\(format.endOfLine)"
+			}
 		}
 		
 		str += "\(format.indentation)}"
@@ -215,28 +164,21 @@ extension Dictionary: PListArchivable {
 }
 
 extension Array: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		var format = format
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
 		var str = "(\(format.startOfLine)"
-		format.indentation.increase()
-		for item in self {
-			guard let item = item as? PListArchivable else { fatalError() }
-			str += "\(format.indentation)\(item.plistRepresentation(format: format)),\(format.endOfLine)"
+		format.indented { (format) in
+			for item in self {
+				guard let item = item as? PListArchivable else { fatalError() }
+				str += "\(format.indentation)\(item.plistRepresentation(format: format, objectVersion: objectVersion)),\(format.endOfLine)"
+			}
 		}
-		format.indentation.decrease()
 		str += "\(format.indentation))"
 		return str
 	}
 }
 
 extension PlistID: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		return rawValue
-	}
-}
-
-extension PlistISA: PListArchivable {
-	func plistRepresentation(format: Format) -> String {
-		return rawValue
+	func plistRepresentation(format: Format, objectVersion: ObjectVersion) -> String {
+		return description
 	}
 }

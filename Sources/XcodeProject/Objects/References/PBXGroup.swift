@@ -7,12 +7,25 @@
 //
 
 public class PBXGroup: PBXReference {
+	private enum CodingKeys: String, CodingKey {
+		case children
+	}
+
 	public var children: [PBXReference] = [] {
 		didSet {
 			children.forEach {
 				$0.parent = self
 			}
 		}
+	}
+	
+	public override var isGroup: Bool { return true }
+	public override var isLeaf: Bool { return false }
+	
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(children, forKey: .children)
 	}
 	
 	override func willMove(from: PBXObject?) {
@@ -39,12 +52,6 @@ public class PBXGroup: PBXReference {
 		children.forEach {
 			visitor.visit(object: $0)
 		}
-	}
-	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["children"] = children.map { $0.plistID }
-		return plist
 	}
 	
 	public func add(child: PBXReference) {

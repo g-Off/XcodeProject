@@ -39,22 +39,10 @@ class XcodeProjectTests: XCTestCase {
 		if streamWriter.string != string {
 			let failureURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(UUID().uuidString).pbxproj")
 			try streamWriter.string.write(to: failureURL, atomically: true, encoding: .utf8)
+			add(XCTAttachment(contentsOfFile: failureURL))
 			
 			XCTFail("Failed to generate matching output for \(url.lastPathComponent). Run ksdiff \(url.path) \(failureURL.path)")
 		}
-	}
-	
-	func testSelfArchive() throws {
-		// Disabled this test for now because Swift Package Manager generates project in a way that isn't great. The main group always has an empty comment associated with it, but Xcode doesn't do this >:(
-		//try assertReadWriteProject(url: selfPath)
-	}
-	
-	func testSelfSave() throws {
-		let copiedProjectURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(UUID().uuidString).xcodeproj", isDirectory: true)
-		try FileManager.default.copyItem(at: selfPath, to: copiedProjectURL)
-		let projectFile = try ProjectFile(url: copiedProjectURL)
-		projectFile.project.mainGroup.sort(recursive: true, by: .type)
-		try projectFile.save()
 	}
 	
 	func testAggregateTarget() throws {

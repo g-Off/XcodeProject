@@ -8,6 +8,19 @@
 
 import Foundation
 
+public enum ObjectVersion: UInt, Comparable, CaseIterable {
+	public static func < (lhs: ObjectVersion, rhs: ObjectVersion) -> Bool {
+		return lhs.rawValue < rhs.rawValue
+	}
+	
+	case xcode31 = 45
+	case xcode32 = 46
+	case xcode63 = 47
+	case xcode8 = 48
+	case xcode93 = 50
+	case xcode10 = 51
+}
+
 public final class ProjectFile {
 	enum Error: Swift.Error {
 		case invalid
@@ -20,15 +33,6 @@ public final class ProjectFile {
 		static let objectVersion = "objectVersion"
 		static let archiveVersion = "archiveVersion"
 		static let rootObject = "rootObject"
-	}
-	
-	public enum ObjectVersion: UInt {
-		case xcode31 = 45
-		case xcode32 = 46
-		case xcode63 = 47
-		case xcode8 = 48
-		case xcode93 = 50
-		case xcode10 = 51
 	}
 	
 	var archiveVersion: UInt = 1

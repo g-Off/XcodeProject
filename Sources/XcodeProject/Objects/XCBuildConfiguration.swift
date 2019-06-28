@@ -9,6 +9,11 @@
 import Foundation
 
 final class XCBuildConfiguration: PBXObject {
+	private enum CodingKeys: String, CodingKey {
+		case name
+		case buildSettings
+		case baseConfigurationReference
+	}
 	var name: String?
 	var buildSettings = BuildSettings([:])
 	var baseConfigurationReference: PBXFileReference?
@@ -44,16 +49,16 @@ final class XCBuildConfiguration: PBXObject {
 		visitor.visit(object: baseConfigurationReference)
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["name"] = name
-		plist["buildSettings"] = buildSettings
-		plist["baseConfigurationReference"] = baseConfigurationReference?.plistID
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(name, forKey: .name)
+		try container.encode(buildSettings, forKey: .buildSettings)
+		try container.encodeIfPresent(baseConfigurationReference, forKey: .baseConfigurationReference)
 	}
 }
 
-struct BuildSettings: PListArchivable {
+struct BuildSettings: Encodable {
 	
 //	CODE_SIGN_IDENTITY = "iPhone Developer";
 //	"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -109,30 +114,31 @@ struct BuildSettings: PListArchivable {
 		}
 	}
 	
-	// where * in the sdk = 10.2, 10.12, 3.1, etc
-	struct Value: PListArchivable {
-		let value: Any
+	enum Value: Encodable {
+		case string(String)
+		case array([String])
+		
 		init?(_ value: Any) {
-			if value is String || value is [String] {
-				self.value = value
+			if let value = value as? String {
+				self = .string(value)
+			} else if let value = value as? [String] {
+				self = .array(value)
 			} else {
 				return nil
 			}
 		}
 		
-		var string: String? {
-			return value as? String
-		}
-		
-		var array: [String]? {
-			return value as? [String]
-		}
-		
-		func plistRepresentation(format: Format) -> String {
-			guard let value = value as? PListArchivable else {
-				fatalError()
+		func encode(to encoder: Encoder) throws {
+			switch self {
+			case .string(let value):
+				var container = encoder.singleValueContainer()
+				try container.encode(value)
+			case .array(let values):
+				var container = encoder.unkeyedContainer()
+				try values.forEach {
+					try container.encode($0)
+				}
 			}
-			return value.plistRepresentation(format: format)
 		}
 	}
 	
@@ -154,7 +160,11 @@ struct BuildSettings: PListArchivable {
 		return settings[sdkString]
 	}
 	
-	func plistRepresentation(format: Format) -> String {
-		return settings.plistRepresentation(format: format)
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: AnyCodingKey.self)
+		for setting in settings {
+			let key = AnyCodingKey(stringValue: setting.key)!
+			try container.encode(setting.value, forKey: key)
+		}
 	}
 }

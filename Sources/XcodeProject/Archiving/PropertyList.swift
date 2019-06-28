@@ -29,6 +29,10 @@ struct PropertyList {
 		return getTypedObject()
 	}
 	
+	func objectArray() -> [PropertyList]? {
+		return (object as? [Any])?.map { PropertyList($0) }
+	}
+	
 	var array: [String]? {
 		return getTypedObject()
 	}

@@ -48,21 +48,19 @@ public extension PBXGroup {
 	}
 	
 	private func removeDuplicateFiles(recursive: Bool) {
-		var seen: Set<PBXReference> = []
-		var duplicates: [Int] = []
-		for i in 0..<children.count {
-			let child = children[i]
-			if seen.contains(child) {
-				duplicates.append(i)
-			} else {
-				seen.insert(child)
-				if recursive, let group = child as? PBXGroup {
-					group.removeDuplicateFiles(recursive: recursive)
-				}
-			}
+		var fileMap: [String: [PBXReference]] = [:]
+		children.forEach { (reference) in
+			guard let path = reference.path else { return }
+			fileMap[path, default: []].append(reference)
 		}
-		duplicates.reversed().forEach {
-			children.remove(at: $0)
+		let duplicates = fileMap.filter { $0.value.count > 1 }
+		for (_, references) in duplicates {
+			references.filter { $0.isLeaf && $0.buildFiles.isEmpty }.forEach { remove(child: $0) }
+		}
+		if recursive {
+			children.compactMap { $0 as? PBXGroup }.forEach {
+				$0.removeDuplicateFiles(recursive: recursive)
+			}
 		}
 	}
 	
@@ -130,6 +128,7 @@ public extension PBXGroup {
 			guard let childURL = $0.url else { return nil }
 			return (childURL.path, $0)
 		}
+		
 		let childPathMap = Dictionary(uniqueKeysWithValues: childPathItems)
 		do {
 			let contents = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])

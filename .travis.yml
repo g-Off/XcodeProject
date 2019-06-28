@@ -1,6 +1,4 @@
 language: swift
 osx_image: xcode10.2
-xcode_project: XcodeProject.xcodeproj
-xcode_scheme: XcodeProject
 script:
-  - xcodebuild test -scheme XcodeProject | tee xcodebuild.log | xcpretty && exit ${PIPESTATUS[0]}
+  - swift test | tee xcodebuild.log | xcpretty && exit ${PIPESTATUS[0]}

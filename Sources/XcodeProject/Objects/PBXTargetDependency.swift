@@ -7,6 +7,12 @@
 //
 
 public class PBXTargetDependency: PBXObject {
+	private enum CodingKeys: String, CodingKey {
+		case name
+		case target
+		case targetProxy
+	}
+	
 	var name: String?
 	var target: PBXTarget? {
 		didSet {
@@ -44,11 +50,11 @@ public class PBXTargetDependency: PBXObject {
 		visitor.visit(object: targetProxy)
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["name"] = name
-		plist["target"] = target?.plistID
-		plist["targetProxy"] = targetProxy?.plistID
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(name, forKey: .name)
+		try container.encodeIfPresent(target, forKey: .target)
+		try container.encodeIfPresent(targetProxy, forKey: .targetProxy)
 	}
 }

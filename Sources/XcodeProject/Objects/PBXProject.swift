@@ -9,13 +9,79 @@
 import Foundation
 
 public final class PBXProject: PBXObject, PBXContainer {
-	var attributes: [String: Any] = [:]
-	var buildConfigurationList: XCConfigurationList {
-		didSet {
-			buildConfigurationList.parent = self
+	private enum CodingKeys: String, CodingKey {
+		case attributes
+		case buildConfigurationList
+		case compatibilityVersion
+		case developmentRegion
+		case hasScannedForEncodings
+		case knownRegions
+		case mainGroup
+		case productRefGroup
+		case projectDirPath
+		case projectReferences
+		case projectRoot
+		case targets
+	}
+	
+	public class Attributes: Encodable {
+		public enum Value: Encodable {
+			case string(String)
+			case array([Value])
+			case dictionary([String: Value])
+			
+			public func encode(to encoder: Encoder) throws {
+				switch self {
+				case .string(let string):
+					var container = encoder.singleValueContainer()
+					try container.encode(string)
+				case .array(let array):
+					var container = encoder.unkeyedContainer()
+					for value in array {
+						try container.encode(value)
+					}
+				case .dictionary(let dictionary):
+					var container = encoder.container(keyedBy: AnyCodingKey.self)
+					for (key, value) in dictionary {
+						try container.encode(value, forKey: AnyCodingKey(stringValue: key)!)
+					}
+				}
+			}
+		}
+		private var attributes: [String: Value] = [:]
+		
+		init(_ existingAttributes: [String: Any]) {
+			func decodeAttribute(value: Any) -> Value? {
+				if let value = value as? String {
+					return .string(value)
+				} else if let array = value as? [Any] {
+					return .array(array.compactMap { decodeAttribute(value: $0) })
+				} else if let dictionary = value as? [String: Any] {
+					var mappedDictionary: [String: Value] = [:]
+					for (key, value) in dictionary {
+						if let mappedValue = decodeAttribute(value: value) {
+							mappedDictionary[key] = mappedValue
+						}
+					}
+					return .dictionary(mappedDictionary)
+				} else {
+					return nil
+				}
+			}
+			for existingAttribute in existingAttributes {
+				if let existingValue = decodeAttribute(value: existingAttribute.value) {
+					attributes[existingAttribute.key] = existingValue
+				}
+			}
+		}
+		
+		public func encode(to encoder: Encoder) throws {
+			var container = encoder.singleValueContainer()
+			try container.encode(attributes)
 		}
 	}
-	enum CompatibilityVersion: String {
+	
+	enum CompatibilityVersion: String, Encodable {
 		case xcode3_0 = "Xcode 3.0"
 		case xcode3_2 = "Xcode 3.2"
 		case xcode6_3 = "Xcode 6.3"
@@ -23,6 +89,14 @@ public final class PBXProject: PBXObject, PBXContainer {
 		case xcode9_3 = "Xcode 9.3"
 		case xcode_10 = "Xcode 10.0"
 	}
+
+	var attributes = Attributes([:])
+	var buildConfigurationList: XCConfigurationList {
+		didSet {
+			buildConfigurationList.parent = self
+		}
+	}
+	
 	var compatibilityVersion: CompatibilityVersion = .xcode8_0
 	var developmentRegion: String = "English"
 	var hasScannedForEncodings: Bool = false
@@ -34,7 +108,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 	}
 	var productRefGroup: PBXGroup
 	var projectDirPath: String?
-	var projectReferences: [(productGroup: PBXObject, projectRef: PBXFileReference)]?
+	var projectReferences: Set<XCProjectReferenceInfo>?
 	var projectRoot: String?
 	public internal(set) var targets: [PBXTarget] = [] {
 		didSet {
@@ -88,7 +162,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 				fatalError()
 		}
 		
-		self.attributes = attributes
+		self.attributes = Attributes(attributes)
 		self.buildConfigurationList = buildConfigurationList
 		self.compatibilityVersion = compatibilityVersion
 		self.developmentRegion = developmentRegion
@@ -98,19 +172,10 @@ public final class PBXProject: PBXObject, PBXContainer {
 		self.productRefGroup = productRefGroup
 		self.projectDirPath = projectDirPath
 		
-		if let projectReferences = plist["projectReferences"]?.object as? [[String: String]] {
-			self.projectReferences = projectReferences.compactMap { projectReference in
-				guard
-					let projectRefId = PBXGlobalID(rawValue: projectReference["ProjectRef"]),
-					let projectRef = objectCache.object(for: projectRefId) as? PBXFileReference,
-					
-					let productGroupId = PBXGlobalID(rawValue: projectReference["ProductGroup"]),
-					let productGroup = objectCache.object(for: productGroupId)
-					else {
-						return nil
-				}
-				return (productGroup: productGroup, projectRef: projectRef)
-			}
+		if let projectReferences = plist["projectReferences"]?.objectArray() {
+			self.projectReferences = Set(projectReferences.map {
+				XCProjectReferenceInfo(with: $0, objectCache: objectCache)
+			})
 		}
 		
 		self.projectRoot = projectRoot
@@ -154,25 +219,25 @@ public final class PBXProject: PBXObject, PBXContainer {
 		}
 		projectReferences?.forEach {
 			visitor.visit(object: $0.productGroup)
-			visitor.visit(object: $0.projectRef)
+			visitor.visit(object: $0.projectReference)
 		}
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["attributes"] = attributes
-		plist["buildConfigurationList"] = buildConfigurationList.plistID
-		plist["compatibilityVersion"] = compatibilityVersion.rawValue
-		plist["developmentRegion"] = developmentRegion
-		plist["hasScannedForEncodings"] = hasScannedForEncodings
-		plist["knownRegions"] = knownRegions
-		plist["mainGroup"] = mainGroup.plistID
-		plist["productRefGroup"] = productRefGroup.plistID
-		plist["projectDirPath"] = projectDirPath
-		plist["projectReferences"] = projectReferences?.map { return ["ProjectRef": $0.projectRef.plistID, "ProductGroup": $0.productGroup.plistID] }
-		plist["projectRoot"] = projectRoot
-		plist["targets"] = targets.map { $0.plistID }
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(attributes, forKey: .attributes)
+		try container.encode(buildConfigurationList, forKey: .buildConfigurationList)
+		try container.encode(compatibilityVersion, forKey: .compatibilityVersion)
+		try container.encode(developmentRegion, forKey: .developmentRegion)
+		try container.encode(hasScannedForEncodings, forKey: .hasScannedForEncodings)
+		try container.encode(knownRegions, forKey: .knownRegions)
+		try container.encode(mainGroup, forKey: .mainGroup)
+		try container.encode(productRefGroup, forKey: .productRefGroup)
+		try container.encodeIfPresent(projectDirPath, forKey: .projectDirPath)
+		try container.encodeIfPresent(projectReferences?.sorted(by: \XCProjectReferenceInfo.projectReference.displayName, using: String.caseInsensitiveCompare), forKey: .projectReferences)
+		try container.encodeIfPresent(projectRoot, forKey: .projectRoot)
+		try container.encode(targets, forKey: .targets)
 	}
 	
 	public var name: String? {

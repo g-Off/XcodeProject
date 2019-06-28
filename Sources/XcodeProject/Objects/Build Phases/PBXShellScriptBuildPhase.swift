@@ -7,8 +7,20 @@
 //
 
 public final class PBXShellScriptBuildPhase: PBXBuildPhase {
+	private enum CodingKeys: String, CodingKey {
+		case inputPaths
+		case outputPaths
+		case inputFileListPaths
+		case outputFileListPaths
+		case shellPath
+		case shellScript
+		case showEnvVarsInLog
+	}
+
 	var inputPaths: [String] = []
 	var outputPaths: [String] = []
+	var inputFileListPaths: [String] = []
+	var outputFileListPaths: [String] = []
 	var shellPath: String?
 	var shellScript: String?
 	var showEnvVarsInLog: Bool?
@@ -17,18 +29,27 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
 		super.update(with: plist, objectCache: objectCache)
 		self.inputPaths = plist["inputPaths"]?.array ?? []
 		self.outputPaths = plist["outputPaths"]?.array ?? []
+		self.inputFileListPaths = plist["inputFileListPaths"]?.array ?? []
+		self.outputFileListPaths = plist["outputFileListPaths"]?.array ?? []
 		self.shellPath = plist["shellPath"]?.string
 		self.shellScript = plist["shellScript"]?.string
 		self.showEnvVarsInLog = plist["showEnvVarsInLog"]?.bool
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["inputPaths"] = inputPaths
-		plist["outputPaths"] = outputPaths
-		plist["shellPath"] = shellPath
-		plist["shellScript"] = shellScript
-		plist["showEnvVarsInLog"] = showEnvVarsInLog
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		
+		try container.encode(inputPaths, forKey: .inputPaths)
+		try container.encode(outputPaths, forKey: .outputPaths)
+		
+		if encoder.objectVersion >= .xcode93 {
+			try container.encode(inputFileListPaths, forKey: .inputFileListPaths)
+			try container.encode(outputFileListPaths, forKey: .outputFileListPaths)
+		}
+		
+		try container.encodeIfPresent(shellPath, forKey: .shellPath)
+		try container.encodeIfPresent(shellScript, forKey: .shellScript)
+		try container.encodeIfPresent(showEnvVarsInLog, forKey: .showEnvVarsInLog)
 	}
 }

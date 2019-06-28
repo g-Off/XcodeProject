@@ -7,6 +7,16 @@
 //
 
 public class PBXTarget: PBXObject, PBXContainer {
+	private enum CodingKeys: String, CodingKey {
+		case buildConfigurationList
+		case buildPhases
+		case buildRules
+		case dependencies
+		case name
+		case productName
+		case productReference
+	}
+
 	class var allowedBuildPhases: [PBXBuildPhase.Type] {
 		return []
 	}
@@ -106,16 +116,16 @@ public class PBXTarget: PBXObject, PBXContainer {
 		visitor.visit(object: productReference)
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["buildConfigurationList"] = buildConfigurationList?.plistID
-		plist["buildPhases"] = buildPhases.map { $0.plistID }
-		plist["buildRules"] = buildRules?.map { $0.plistID }
-		plist["dependencies"] = dependencies.map { $0.plistID }
-		plist["name"] = name
-		plist["productName"] = productName
-		plist["productReference"] = productReference?.plistID
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(buildConfigurationList, forKey: .buildConfigurationList)
+		try container.encodeIfPresent(buildPhases, forKey: .buildPhases)
+		try container.encodeIfPresent(buildRules, forKey: .buildRules)
+		try container.encode(dependencies, forKey: .dependencies)
+		try container.encodeIfPresent(name, forKey: .name)
+		try container.encodeIfPresent(productName, forKey: .productName)
+		try container.encodeIfPresent(productReference, forKey: .productReference)
 	}
 }
 

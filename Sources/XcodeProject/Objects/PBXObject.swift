@@ -6,7 +6,11 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public class PBXObject {
+public class PBXObject: Encodable {
+	private enum CodingKeys: String, CodingKey {
+		case isa
+	}
+	
 	public let globalID: PBXGlobalID
 	public internal(set) weak var parent: PBXObject? {
 		willSet {
@@ -19,6 +23,11 @@ public class PBXObject {
 	
 	public required init(globalID: PBXGlobalID) {
 		self.globalID = globalID
+	}
+	
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(isa, forKey: .isa)
 	}
 	
 	func willMove(from: PBXObject?) {
@@ -38,7 +47,7 @@ public class PBXObject {
 	
 	// MARK: - Archiving
 	var archiveComment: String {
-		return String(describing: type(of:self))
+		return String(describing: type(of: self))
 	}
 	
 	func visit(_ visitor: ObjectVisitor) {
@@ -50,15 +59,7 @@ public class PBXObject {
 	}
 	
 	var plistID: PlistID {
-		var plistID = "\(globalID.rawValue.quotedString)"
-		if archiveComment.isEmpty == false {
-			plistID += " /* \(archiveComment) */"
-		}
-		return PlistID(rawValue: plistID)
-	}
-	
-	var plistRepresentation: [String: Any?] {
-		return ["isa": PlistISA(rawValue: isa)]
+		return PlistID(globalID, comment: archiveComment)
 	}
 	
 	var archiveInPlistOnSingleLine: Bool {
@@ -80,19 +81,30 @@ public protocol PBXContainer {
 	var name: String? { get }
 }
 
-struct PlistID: CustomStringConvertible {
-	public let rawValue: String
+struct PlistID: Encodable, CustomStringConvertible {
+	public let objectID: PBXGlobalID
+	public let comment: String?
 	
-	public var description: String {
-		return rawValue
+	init(_ objectID: PBXGlobalID, comment: String?) {
+		self.objectID = objectID
+		if let comment = comment, comment.isEmpty {
+			self.comment = nil
+		} else {
+			self.comment = comment
+		}
 	}
-}
-
-struct PlistISA: CustomStringConvertible {
-	public let rawValue: String
 	
 	public var description: String {
-		return rawValue
+		var string = "\(objectID)"
+		if let comment = comment {
+			string += " /* \(comment) */"
+		}
+		return string
+	}
+	
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+		try container.encode(description)
 	}
 }
 
