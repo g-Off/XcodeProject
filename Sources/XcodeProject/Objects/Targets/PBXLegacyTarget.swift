@@ -7,6 +7,13 @@
 //
 
 public final class PBXLegacyTarget: PBXTarget {
+	private enum CodingKeys: String, CodingKey {
+		case buildArgumentsString
+		case buildToolPath
+		case buildWorkingDirectory
+		case passBuildSettingsInEnvironment
+	}
+
 	var buildArguments: String?
 	var buildToolPath: String?
 	var buildWorkingDirectory: String?
@@ -23,12 +30,12 @@ public final class PBXLegacyTarget: PBXTarget {
 		}
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["buildArgumentsString"] = buildArguments
-		plist["buildToolPath"] = buildToolPath
-		plist["buildWorkingDirectory"] = buildWorkingDirectory
-		plist["passBuildSettingsInEnvironment"] = passBuildSettingsInEnvironment
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(buildArguments, forKey: .buildArgumentsString)
+		try container.encode(buildToolPath, forKey: .buildToolPath)
+		try container.encode(buildWorkingDirectory, forKey: .buildWorkingDirectory)
+		try container.encode(passBuildSettingsInEnvironment, forKey: .passBuildSettingsInEnvironment)
 	}
 }

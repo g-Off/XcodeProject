@@ -7,7 +7,11 @@
 //
 
 public final class PBXNativeTarget: PBXTarget {
-	public enum ProductType: String {
+	private enum CodingKeys: String, CodingKey {
+		case productType
+	}
+
+	public enum ProductType: String, Encodable {
 		case application = "com.apple.product-type.application"
 		case framework = "com.apple.product-type.framework"
 		case dynamicLibrary = "com.apple.product-type.library.dynamic"
@@ -42,10 +46,10 @@ public final class PBXNativeTarget: PBXTarget {
 		self.productType = productType
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["productType"] = productType.rawValue
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(productType, forKey: .productType)
 	}
 	
 	public override func addBuildPhase<T: PBXBuildPhase>() -> T? {

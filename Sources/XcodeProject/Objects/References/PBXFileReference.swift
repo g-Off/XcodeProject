@@ -9,6 +9,15 @@
 import Foundation
 
 public final class PBXFileReference: PBXReference {
+	private enum CodingKeys: String, CodingKey {
+		case fileEncoding
+		case includeInIndex
+		case xcLanguageSpecificationIdentifier
+		case wrapsLines
+		case lastKnownFileType
+		case explicitFileType
+	}
+
 	public enum FileType {
 		case lastKnown(String)
 		case explicit(String)
@@ -36,10 +45,11 @@ public final class PBXFileReference: PBXReference {
 		}
 	}
 	
-	var fileEncoding: String.Encoding? = nil
-	var includeInIndex: Bool?
+	public private(set) var fileEncoding: String.Encoding? = nil
+	public private(set) var includeInIndex: Bool?
 	public private(set) var fileType: FileType = .unknown
-	public internal(set) var xcLanguageSpecificationIdentifier: String? // TODO: this should be a PBXFileType (xcode.lang.swift)
+	public private(set) var xcLanguageSpecificationIdentifier: String? // TODO: this should be a PBXFileType (xcode.lang.swift)
+	public private(set) var wrapsLines: Bool?
 	
 	public required init(globalID: PBXGlobalID) {
 		super.init(globalID: globalID)
@@ -70,22 +80,24 @@ public final class PBXFileReference: PBXReference {
 		self.includeInIndex = plist["includeInIndex"]?.bool
 		self.fileType = FileType.from(plist)
 		self.xcLanguageSpecificationIdentifier = plist["xcLanguageSpecificationIdentifier"]?.string
+		self.wrapsLines = plist["wrapsLines"]?.bool
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["fileEncoding"] = fileEncoding?.rawValue
-		plist["includeInIndex"] = includeInIndex
-		plist["xcLanguageSpecificationIdentifier"] = xcLanguageSpecificationIdentifier
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(fileEncoding?.rawValue, forKey: .fileEncoding)
+		try container.encodeIfPresent(includeInIndex, forKey: .includeInIndex)
+		try container.encodeIfPresent(xcLanguageSpecificationIdentifier, forKey: .xcLanguageSpecificationIdentifier)
+		try container.encodeIfPresent(wrapsLines, forKey: .wrapsLines)
 		switch fileType {
 		case .lastKnown(let type):
-			plist["lastKnownFileType"] = type
+			try container.encodeIfPresent(type, forKey: .lastKnownFileType)
 		case .explicit(let type):
-			plist["explicitFileType"] = type
+			try container.encodeIfPresent(type, forKey: .explicitFileType)
 		case .unknown:
 			break
 		}
-		return plist
 	}
 	
 	override var archiveInPlistOnSingleLine: Bool {

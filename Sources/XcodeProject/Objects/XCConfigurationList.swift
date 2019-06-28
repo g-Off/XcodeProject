@@ -7,6 +7,12 @@
 //
 
 final class XCConfigurationList: PBXObject {
+	private enum CodingKeys: String, CodingKey {
+		case buildConfigurations
+		case defaultConfigurationIsVisible
+		case defaultConfigurationName
+	}
+	
 	var buildConfigurations: [XCBuildConfiguration] = [] {
 		didSet {
 			buildConfigurations.forEach { $0.parent = self }
@@ -65,11 +71,11 @@ final class XCConfigurationList: PBXObject {
 		return comment
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["buildConfigurations"] = buildConfigurations.map { $0.plistID }
-		plist["defaultConfigurationIsVisible"] = defaultConfigurationIsVisible
-		plist["defaultConfigurationName"] = defaultConfigurationName
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(buildConfigurations, forKey: .buildConfigurations)
+		try container.encode(defaultConfigurationIsVisible, forKey: .defaultConfigurationIsVisible)
+		try container.encodeIfPresent(defaultConfigurationName, forKey: .defaultConfigurationName)
 	}
 }

@@ -7,6 +7,13 @@
 //
 
 public class PBXBuildPhase: PBXObject {
+	private enum CodingKeys: String, CodingKey {
+		case name
+		case files
+		case runOnlyForDeploymentPostprocessing
+		case buildActionMask
+	}
+
 	class var defaultName: String {
 		return ""
 	}
@@ -96,12 +103,12 @@ public class PBXBuildPhase: PBXObject {
 		}
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["name"] = _name
-		plist["files"] = files.map { $0.plistID }
-		plist["runOnlyForDeploymentPostprocessing"] = runOnlyForDeploymentPostprocessing
-		plist["buildActionMask"] = buildActionMask
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(_name, forKey: .name)
+		try container.encode(files, forKey: .files)
+		try container.encodeIfPresent(runOnlyForDeploymentPostprocessing, forKey: .runOnlyForDeploymentPostprocessing)
+		try container.encode(buildActionMask, forKey: .buildActionMask)
 	}
 }

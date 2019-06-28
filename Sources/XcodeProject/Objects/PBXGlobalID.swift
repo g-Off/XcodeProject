@@ -7,10 +7,7 @@
 
 import Foundation
 
-public struct PBXGlobalID: RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
-	public var description: String { return rawValue }
-	public var debugDescription: String { return rawValue }
-	
+public struct PBXGlobalID: Encodable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
 	public let rawValue: String
 	
 	public init(rawValue: String) {
@@ -24,6 +21,14 @@ public struct PBXGlobalID: RawRepresentable, CustomStringConvertible, CustomDebu
 	
 	public init() {
 		self.rawValue = PBXGlobalID.generator.next()
+	}
+	
+	public var description: String {
+		return rawValue
+	}
+
+	public var debugDescription: String {
+		return rawValue
 	}
 	
 	static func ids(from strings: [String]?) -> [PBXGlobalID]? {

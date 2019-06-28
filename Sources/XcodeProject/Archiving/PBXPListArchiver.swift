@@ -55,9 +55,9 @@ public class OutputStreamWriter: StreamWritable {
 
 struct Format {
 	struct Indentation: CustomStringConvertible {
-		var enabled = true
 		var character: String = "\t"
 		var level: Int = 0
+		var enabled = true
 		mutating func increase() {
 			if enabled {
 				level += 1
@@ -78,6 +78,17 @@ struct Format {
 	var startOfLine: String = "\n"
 	var endOfLine: String = "\n"
 	var indentation: Indentation = Indentation()
+	
+	static var singleLine: Format {
+		return Format(startOfLine: "", endOfLine: " ", indentation: Format.Indentation(character: "", level: 0, enabled: false))
+	}
+	
+	func indented(_ block: (Format) throws -> Void) rethrows {
+		var format = self
+		format.indentation.increase()
+		try block(format)
+		format.indentation.decrease()
+	}
 }
 
 struct ObjectMap {
@@ -111,20 +122,19 @@ public final class PBXPListArchiver {
 	}
 	
 	public func write(stream: StreamWritable) throws {
-		var format = Format()
-		
+		let format = Format()
 		try stream.write("// !$*UTF8*$!\(format.endOfLine)")
 		try stream.write("{\(format.endOfLine)")
-		format.indentation.increase()
-		try archiveDictionary.sorted { (obj1, obj2) in
-			return obj1.key < obj2.key
-		}.forEach { (key, value) in
-			guard let value = value else { return }
-			try stream.write("\(format.indentation)\(key) = ")
-			try stream.write(value.plistRepresentation(format: format))
-			try stream.write(";\(format.endOfLine)")
+		try format.indented { format in
+			try archiveDictionary.sorted { (obj1, obj2) in
+				return obj1.key < obj2.key
+				}.forEach { (key, value) in
+					guard let value = value else { return }
+					try stream.write("\(format.indentation)\(key) = ")
+					try stream.write(value.plistRepresentation(format: format, objectVersion: projectFile.objectVersion))
+					try stream.write(";\(format.endOfLine)")
+			}
 		}
-		format.indentation.decrease()
 		
 		try stream.write("}\(format.endOfLine)")
 	}

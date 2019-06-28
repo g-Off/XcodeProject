@@ -9,7 +9,17 @@
 import Foundation
 
 public class PBXReference: PBXObject {
-	public enum SourceTree: String {
+	private enum CodingKeys: String, CodingKey {
+		case name
+		case path
+		case sourceTree
+		case usesTabs
+		case lineEnding
+		case tabWidth
+		case indentWidth
+	}
+	
+	public enum SourceTree: String, Encodable {
 		case absolute = "<absolute>"
 		case group = "<group>"
 		case project = "SOURCE_ROOT"
@@ -18,22 +28,10 @@ public class PBXReference: PBXObject {
 		case sdkRoot = "SDKROOT"
 	}
 	
-	enum LineEnding: Int8 {
+	public enum LineEnding: Int8, Encodable {
 		case lf = 0
 		case cr = 1
 		case crlf = 2
-	}
-	
-	public internal(set) var path: String?
-	public internal(set) var name: String?
-	public internal(set) var sourceTree: SourceTree?
-    var usesTabs: Bool?
-	var tabWidth: Int?
-	var lineEnding: LineEnding?
-	var indentWidth: Int?
-	
-	var buildFiles: [PBXBuildFile] {
-		return _buildFiles.compactMap { $0.item }
 	}
 	
 	private struct WeakBuildFile: Hashable {
@@ -48,16 +46,20 @@ public class PBXReference: PBXObject {
 		}
 	}
 	
+	public internal(set) var path: String?
+	public internal(set) var name: String?
+	public internal(set) var sourceTree: SourceTree?
+	public internal(set) var usesTabs: Bool?
+	public internal(set) var tabWidth: Int?
+	public internal(set) var lineEnding: LineEnding?
+	public internal(set) var indentWidth: Int?
+	public var buildFiles: [PBXBuildFile] {
+		return _buildFiles.compactMap { $0.item }
+	}
+	public var isGroup: Bool { return false }
+	public var isLeaf: Bool { return true }
+	
 	private var _buildFiles: Array<WeakBuildFile> = []
-	
-	func register(buildFile: PBXBuildFile) {
-		_buildFiles.removeAll { $0.item == nil }
-		_buildFiles.append(WeakBuildFile(item: buildFile))
-	}
-	
-	func unregister(buildFile: PBXBuildFile) {
-		_buildFiles.removeAll { $0.item == nil || $0.item == buildFile }
-	}
 	
 	public var displayName: String {
 		if let name = name {
@@ -85,6 +87,18 @@ public class PBXReference: PBXObject {
 		}
 	}
 	
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(name, forKey: .name)
+		try container.encodeIfPresent(path, forKey: .path)
+		try container.encodeIfPresent(sourceTree, forKey: .sourceTree)
+		try container.encodeIfPresent(usesTabs, forKey: .usesTabs)
+		try container.encodeIfPresent(lineEnding, forKey: .lineEnding)
+		try container.encodeIfPresent(tabWidth, forKey: .tabWidth)
+		try container.encodeIfPresent(indentWidth, forKey: .indentWidth)
+	}
+	
 	// MARK: - PList Unarchiving
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
@@ -108,15 +122,12 @@ public class PBXReference: PBXObject {
 		return ""
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["name"] = name
-		plist["path"] = path
-		plist["sourceTree"] = sourceTree?.rawValue
-		plist["usesTabs"] = usesTabs
-		plist["lineEnding"] = lineEnding?.rawValue
-		plist["tabWidth"] = tabWidth
-		plist["indentWidth"] = indentWidth
-		return plist
+	func register(buildFile: PBXBuildFile) {
+		_buildFiles.removeAll { $0.item == nil }
+		_buildFiles.append(WeakBuildFile(item: buildFile))
+	}
+	
+	func unregister(buildFile: PBXBuildFile) {
+		_buildFiles.removeAll { $0.item == nil || $0.item == buildFile }
 	}
 }

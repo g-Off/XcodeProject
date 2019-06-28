@@ -7,6 +7,11 @@
 //
 
 public final class XCVersionGroup: PBXGroup {
+	private enum CodingKeys: String, CodingKey {
+		case currentVersion
+		case versionGroupType
+	}
+
 	var currentVersion: PBXFileReference? {
 		didSet {
 			currentVersion?.parent = self
@@ -38,10 +43,10 @@ public final class XCVersionGroup: PBXGroup {
 		self.versionGroupType = versionGroupType
 	}
 	
-	override var plistRepresentation: [String: Any?] {
-		var plist = super.plistRepresentation
-		plist["currentVersion"] = currentVersion?.plistID
-		plist["versionGroupType"] = versionGroupType
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(currentVersion?.plistID, forKey: .currentVersion)
+		try container.encodeIfPresent(versionGroupType, forKey: .versionGroupType)
 	}
 }

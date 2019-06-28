@@ -7,11 +7,16 @@
 //
 
 public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
+	private enum CodingKeys: String, CodingKey {
+		case dstPath
+		case dstSubfolderSpec
+	}
+
 	class override var defaultName: String {
 		return "Copy Files"
 	}
 	
-	enum Destination: Int8 {
+	enum Destination: Int8, Encodable {
 		case absolutePath = 0
 		case wrapper = 1
 		case executables = 6
@@ -40,10 +45,10 @@ public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
 		self.dstSubfolderSpec = dstSubfolderSpec
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["dstPath"] = dstPath
-		plist["dstSubfolderSpec"] = dstSubfolderSpec.rawValue
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(dstPath, forKey: .dstPath)
+		try container.encode(dstSubfolderSpec, forKey: .dstSubfolderSpec)
 	}
 }

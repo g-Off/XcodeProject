@@ -7,6 +7,13 @@
 //
 
 public final class PBXBuildRule: PBXObject {
+	private enum CodingKeys: String, CodingKey {
+		case compilerSpec
+		case fileType
+		case isEditable
+		case outputFiles
+		case script
+	}
 	var compilerSpec: String?
 	var fileType: String?
 	var isEditable: Bool = true
@@ -22,13 +29,13 @@ public final class PBXBuildRule: PBXObject {
 		self.script = plist["script"]?.string
 	}
 	
-	override var plistRepresentation: [String : Any?] {
-		var plist = super.plistRepresentation
-		plist["compilerSpec"] = compilerSpec
-		plist["fileType"] = fileType
-		plist["isEditable"] = isEditable
-		plist["outputFiles"] = outputFiles
-		plist["script"] = script
-		return plist
+	public override func encode(to encoder: Encoder) throws {
+		try super.encode(to: encoder)
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encodeIfPresent(compilerSpec, forKey: .compilerSpec)
+		try container.encodeIfPresent(fileType, forKey: .fileType)
+		try container.encode(isEditable, forKey: .isEditable)
+		try container.encode(outputFiles, forKey: .outputFiles)
+		try container.encodeIfPresent(script, forKey: .script)
 	}
 }
