@@ -144,7 +144,7 @@ final class ObjectVisitor {
 	private var objectMap: [PBXGlobalID: PBXObject] = [:]
 	private var visited = Set<PBXGlobalID>()
 	
-	func visit(object: PBXObject?, where predicate: @escaping (_ object: PBXObject) -> Bool = { _ in return true}) {
+	func visit(object: PBXObject?, where predicate: @escaping (_ object: PBXObject) -> Bool = { _ in return true }) {
 		guard let object = object else { return }
 		guard !visited.contains(object.globalID) else { return }
 		if predicate(object) {
