@@ -46,7 +46,7 @@ public final class XCVersionGroup: PBXGroup {
 	public override func encode(to encoder: Encoder) throws {
 		try super.encode(to: encoder)
 		var container = encoder.container(keyedBy: CodingKeys.self)
-		try container.encodeIfPresent(currentVersion?.plistID, forKey: .currentVersion)
+		try container.encodeIfPresent(currentVersion, forKey: .currentVersion)
 		try container.encodeIfPresent(versionGroupType, forKey: .versionGroupType)
 	}
 }
