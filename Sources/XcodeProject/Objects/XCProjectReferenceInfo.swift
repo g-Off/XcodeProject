@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class XCProjectReferenceInfo: Hashable, Encodable {
+final class XCProjectReferenceInfo: Hashable, Encodable { // PBXProjectItem
 	static func == (lhs: XCProjectReferenceInfo, rhs: XCProjectReferenceInfo) -> Bool {
 		return lhs.productGroup == rhs.productGroup && lhs.projectReference == rhs.projectReference
 	}

@@ -21,6 +21,10 @@ struct AnyCodingKey: CodingKey, Equatable, Hashable {
 		self.intValue = intValue
 	}
 	
+	init(index: Int) {
+		self.init(intValue: index)!
+	}
+	
 	init<Key>(_ base: Key) where Key: CodingKey {
 		if let intValue = base.intValue {
 			self.init(intValue: intValue)!

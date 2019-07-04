@@ -31,8 +31,8 @@ public final class PBXReferenceProxy: PBXReference {
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.fileType = plist["fileType"]?.string
-		self.remoteRef = objectCache.object(for: PBXGlobalID(rawValue: plist["remoteRef"]?.string)) as? PBXContainerItemProxy
+		self.fileType = plist[CodingKeys.fileType]?.string
+		self.remoteRef = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.remoteRef]?.string)) as? PBXContainerItemProxy
 		self.sourceTree = sourceTree
 	}
 	

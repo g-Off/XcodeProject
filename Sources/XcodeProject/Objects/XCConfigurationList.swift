@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class XCConfigurationList: PBXObject {
+final class XCConfigurationList: PBXProjectItem {
 	private enum CodingKeys: String, CodingKey {
 		case buildConfigurations
 		case defaultConfigurationIsVisible
@@ -45,15 +45,15 @@ final class XCConfigurationList: PBXObject {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let buildConfigurations = PBXGlobalID.ids(from: plist["buildConfigurations"]?.array),
-			let defaultConfigurationIsVisibleString = plist["defaultConfigurationIsVisible"]?.string
+			let buildConfigurations = PBXGlobalID.ids(from: plist[CodingKeys.buildConfigurations]?.array),
+			let defaultConfigurationIsVisibleString = plist[CodingKeys.defaultConfigurationIsVisible]?.string
 			else {
 				fatalError()
 		}
 		
 		self.buildConfigurations = buildConfigurations.compactMap { objectCache.object(for: $0) }
 		self.defaultConfigurationIsVisible = Int(defaultConfigurationIsVisibleString) != 0
-		self.defaultConfigurationName = plist["defaultConfigurationName"]?.string
+		self.defaultConfigurationName = plist[CodingKeys.defaultConfigurationName]?.string
 	}
 	
 	override public func visit(_ visitor: ObjectVisitor) {

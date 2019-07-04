@@ -24,9 +24,9 @@ public final class PBXFileReference: PBXReference {
 		case unknown
 		
 		static func from(_ plist: PropertyList) -> FileType {
-			if let lastKnownFileType = plist["lastKnownFileType"]?.string {
+			if let lastKnownFileType = plist[CodingKeys.lastKnownFileType]?.string {
 				return .lastKnown(lastKnownFileType)
-			} else if let explicitFileType = plist["explicitFileType"]?.string {
+			} else if let explicitFileType = plist[CodingKeys.explicitFileType]?.string {
 				return .explicit(explicitFileType)
 			} else {
 				return .unknown
@@ -73,14 +73,14 @@ public final class PBXFileReference: PBXReference {
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		
-		if let encoding = plist["fileEncoding"]?.uint {
+		if let encoding = plist[CodingKeys.fileEncoding]?.uint {
 			self.fileEncoding = String.Encoding(rawValue: encoding)
 		}
 		
-		self.includeInIndex = plist["includeInIndex"]?.bool
+		self.includeInIndex = plist[CodingKeys.includeInIndex]?.bool
 		self.fileType = FileType.from(plist)
-		self.xcLanguageSpecificationIdentifier = plist["xcLanguageSpecificationIdentifier"]?.string
-		self.wrapsLines = plist["wrapsLines"]?.bool
+		self.xcLanguageSpecificationIdentifier = plist[CodingKeys.xcLanguageSpecificationIdentifier]?.string
+		self.wrapsLines = plist[CodingKeys.wrapsLines]?.bool
 	}
 	
 	public override func encode(to encoder: Encoder) throws {

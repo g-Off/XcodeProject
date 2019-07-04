@@ -33,8 +33,8 @@ public final class XCVersionGroup: PBXGroup {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let currentVersion = objectCache.object(for: PBXGlobalID(rawValue: plist["currentVersion"]?.string)) as? PBXFileReference,
-			let versionGroupType = plist["versionGroupType"]?.string
+			let currentVersion = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.currentVersion]?.string)) as? PBXFileReference,
+			let versionGroupType = plist[CodingKeys.versionGroupType]?.string
 			else {
 				fatalError()
 		}

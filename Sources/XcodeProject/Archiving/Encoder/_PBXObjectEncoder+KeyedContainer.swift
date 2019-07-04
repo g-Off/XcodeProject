@@ -28,17 +28,17 @@ extension _PBXObjectEncoder.KeyedContainer: KeyedEncodingContainerProtocol {
 	}
 	
 	func encodeNil(forKey key: Key) throws {
-		container[key.stringValue] = NSNull()
+		container[key.stringValue.quotedString] = NSNull()
 	}
 	
 	func encode(_ value: String, forKey key: Key) throws {
-		container[key.stringValue] = NSString(string: value.quotedString)
+		container[key.stringValue.quotedString] = NSString(string: value.quotedString)
 	}
 	
 	func encode<T>(_ value: T, forKey key: Key) throws where T: Encodable {
 		encoder.codingPath.append(key)
 		defer { encoder.codingPath.removeLast() }
-		container[key.stringValue] = try encoder.box(value)
+		container[key.stringValue.quotedString] = try encoder.box(value)
 	}
 	
 	func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {

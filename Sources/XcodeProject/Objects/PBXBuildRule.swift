@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public final class PBXBuildRule: PBXObject {
+public final class PBXBuildRule: PBXProjectItem {
 	private enum CodingKeys: String, CodingKey {
 		case compilerSpec
 		case fileType
@@ -22,11 +22,11 @@ public final class PBXBuildRule: PBXObject {
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.compilerSpec = plist["compilerSpec"]?.string
-		self.fileType = plist["fileType"]?.string
-		self.isEditable = plist["isEditable"]?.bool ?? true
-		self.outputFiles = plist["outputFiles"]?.array ?? []
-		self.script = plist["script"]?.string
+		self.compilerSpec = plist[CodingKeys.compilerSpec]?.string
+		self.fileType = plist[CodingKeys.fileType]?.string
+		self.isEditable = plist[CodingKeys.isEditable]?.bool ?? true
+		self.outputFiles = plist[CodingKeys.outputFiles]?.array ?? []
+		self.script = plist[CodingKeys.script]?.string
 	}
 	
 	public override func encode(to encoder: Encoder) throws {

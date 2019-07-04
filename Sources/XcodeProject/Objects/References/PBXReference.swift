@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class PBXReference: PBXObject {
+public class PBXReference: PBXContainerItem {
 	private enum CodingKeys: String, CodingKey {
 		case name
 		case path
@@ -26,6 +26,7 @@ public class PBXReference: PBXObject {
 		case builtProducts = "BUILT_PRODUCTS_DIR"
 		case developerDir = "DEVELOPER_DIR"
 		case sdkRoot = "SDKROOT"
+		case unknown = "<unknown>"
 	}
 	
 	public enum LineEnding: Int8, Encodable {
@@ -102,15 +103,15 @@ public class PBXReference: PBXObject {
 	// MARK: - PList Unarchiving
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.path = plist["path"]?.string
-		self.name = plist["name"]?.string
-		self.sourceTree = SourceTree(rawValue: plist["sourceTree"]?.string ?? "")
-		self.usesTabs = plist["usesTabs"]?.bool
-		self.tabWidth = plist["tabWidth"]?.int
-		if let lineEnding = plist["lineEnding"]?.int8 {
+		self.path = plist[CodingKeys.path]?.string
+		self.name = plist[CodingKeys.name]?.string
+		self.sourceTree = SourceTree(rawValue: plist[CodingKeys.sourceTree]?.string ?? "")
+		self.usesTabs = plist[CodingKeys.usesTabs]?.bool
+		self.tabWidth = plist[CodingKeys.tabWidth]?.int
+		if let lineEnding = plist[CodingKeys.lineEnding]?.int8 {
 			self.lineEnding = LineEnding(rawValue: lineEnding)
 		}
-		self.indentWidth = plist["indentWidth"]?.int
+		self.indentWidth = plist[CodingKeys.indentWidth]?.int
 	}
 	
 	override var archiveComment: String {

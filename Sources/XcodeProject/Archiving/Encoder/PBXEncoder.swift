@@ -6,16 +6,38 @@
 //
 
 import Foundation
+import ObjectCoder
 
 class PBXObjectEncoder {
 	static let objectVersionKey = CodingUserInfoKey(rawValue: "objectVersion")!
 	var objectVersion: ObjectVersion = .xcode93
 	
+	private static func quotedKey(_ codingKeys: [CodingKey]) -> CodingKey {
+		let codingKey = codingKeys.last!
+		if codingKey.intValue != nil { return codingKey }
+		return AnyCodingKey(stringValue: codingKey.stringValue.quotedString)!
+	}
+	
 	func encode(_ object: PBXObject) throws -> [String: AnyObject] {
-		let encoder = _PBXObjectEncoder()
-		encoder.userInfo = [PBXObjectEncoder.objectVersionKey: objectVersion]
+		let options = ObjectEncoder<NSObject>.Options(
+			keyEncodingStrategy: .custom(PBXObjectEncoder.quotedKey),
+			userInfo: [PBXObjectEncoder.objectVersionKey: objectVersion]
+		)
+		let boxer = ObjectEncoder<NSObject>.Boxer()
+		boxer.addWrapper { (object: PBXObject) -> NSObject in
+			return NSString(string: object.plistID.description)
+		}
+		boxer.encodedString = { (value, _) in
+			return NSString(string: value.quotedString)
+		}
+		let encoder = ObjectEncoder(options: options, boxer: boxer)
 		try object.encode(to: encoder)
-		return encoder.storage.popContainer() as? [String: AnyObject] ?? [:]
+		return encoder.encoded as? [String: AnyObject] ?? [:]
+		
+//		let encoder = _PBXObjectEncoder()
+//		encoder.userInfo = [PBXObjectEncoder.objectVersionKey: objectVersion]
+//		try object.encode(to: encoder)
+//		return encoder.storage.popContainer() as? [String: AnyObject] ?? [:]
 	}
 }
 

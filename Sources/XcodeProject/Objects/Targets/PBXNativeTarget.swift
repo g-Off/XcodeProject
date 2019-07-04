@@ -39,7 +39,7 @@ public final class PBXNativeTarget: PBXTarget {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let productType = ProductType(rawValue: plist["productType"]?.string ?? "")
+			let productType = ProductType(rawValue: plist[CodingKeys.productType]?.string ?? "")
 			else {
 				fatalError()
 		}

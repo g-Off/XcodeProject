@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-final class PBXContainerItemProxy: PBXObject {
+final class PBXContainerItemProxy: PBXContainerItem {
 	private enum CodingKeys: String, CodingKey {
 		case containerPortal
 		case proxyType
@@ -33,10 +33,10 @@ final class PBXContainerItemProxy: PBXObject {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let containerPortal = objectCache.object(for: PBXGlobalID(rawValue: plist["containerPortal"]?.string)),
-			let proxyType = ProxyType(string: plist["proxyType"]?.string),
-			let remoteGlobalIDString = plist["remoteGlobalIDString"]?.string,
-			let remoteInfo = plist["remoteInfo"]?.string
+			let containerPortal = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.containerPortal]?.string)),
+			let proxyType = ProxyType(string: plist[CodingKeys.proxyType]?.string),
+			let remoteGlobalIDString = plist[CodingKeys.remoteGlobalIDString]?.string,
+			let remoteInfo = plist[CodingKeys.remoteInfo]?.string
 			else {
 				fatalError()
 		}

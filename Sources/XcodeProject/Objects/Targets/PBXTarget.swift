@@ -6,13 +6,14 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public class PBXTarget: PBXObject, PBXContainer {
+public class PBXTarget: PBXProjectItem, PBXContainer {
 	private enum CodingKeys: String, CodingKey {
 		case buildConfigurationList
 		case buildPhases
 		case buildRules
 		case dependencies
 		case name
+		case packageProductDependencies
 		case productName
 		case productReference
 	}
@@ -53,6 +54,7 @@ public class PBXTarget: PBXObject, PBXContainer {
 			productReference?.parent = self
 		}
 	}
+	var packageProductDependencies: [XCSwiftPackageProductDependency]?
 	
 	override func willMove(from: PBXObject?) {
 		super.willMove(from: from)
@@ -76,27 +78,33 @@ public class PBXTarget: PBXObject, PBXContainer {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let buildConfigurationListID = PBXGlobalID(rawValue: plist["buildConfigurationList"]?.string),
+			let buildConfigurationListID = PBXGlobalID(rawValue: plist[CodingKeys.buildConfigurationList]?.string),
 			let buildConfigurationList = objectCache.object(for: buildConfigurationListID) as? XCConfigurationList,
-			let buildPhases = plist["buildPhases"]?.array,
-			let dependencies = plist["dependencies"]?.array,
-			let name = plist["name"]?.string,
-			let productName = plist["productName"]?.string
+			let buildPhases = plist[CodingKeys.buildPhases]?.array,
+			let dependencies = plist[CodingKeys.dependencies]?.array,
+			let name = plist[CodingKeys.name]?.string,
+			let productName = plist[CodingKeys.productName]?.string
 			else {
 				fatalError()
 		}
 		self.name = name
 		self.productName = productName
-		self.productReference = objectCache.object(for: PBXGlobalID(rawValue: plist["productReference"]?.string)) as? PBXFileReference
+		self.productReference = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.productReference]?.string)) as? PBXFileReference
 		self.buildConfigurationList = buildConfigurationList
 		self.buildPhases = buildPhases.compactMap {
 			return objectCache.object(for: PBXGlobalID(rawValue: $0)) as? PBXBuildPhase
 		}
-		self.buildRules = plist["buildRules"]?.array?.compactMap {
+		self.buildRules = plist[CodingKeys.buildRules]?.array?.compactMap {
 			return objectCache.object(for: PBXGlobalID(rawValue: $0)) as? PBXBuildRule
 		}
 		self.dependencies = dependencies.compactMap {
 			return objectCache.object(for: PBXGlobalID(rawValue: $0)) as? PBXTargetDependency
+		}
+		
+		if let packageProductDependencies = plist[CodingKeys.packageProductDependencies]?.array {
+			self.packageProductDependencies = packageProductDependencies.map { PBXGlobalID(rawValue: $0) }.compactMap {
+				objectCache.object(for: $0)
+			}
 		}
 	}
 	
@@ -113,6 +121,9 @@ public class PBXTarget: PBXObject, PBXContainer {
 		dependencies.forEach {
 			visitor.visit(object: $0)
 		}
+		packageProductDependencies?.forEach {
+			visitor.visit(object: $0)
+		}
 		visitor.visit(object: productReference)
 	}
 	
@@ -124,6 +135,9 @@ public class PBXTarget: PBXObject, PBXContainer {
 		try container.encodeIfPresent(buildRules, forKey: .buildRules)
 		try container.encode(dependencies, forKey: .dependencies)
 		try container.encodeIfPresent(name, forKey: .name)
+		if encoder.objectVersion >= .xcode11 {
+			try container.encodeIfPresent(packageProductDependencies, forKey: .packageProductDependencies)
+		}
 		try container.encodeIfPresent(productName, forKey: .productName)
 		try container.encodeIfPresent(productReference, forKey: .productReference)
 	}

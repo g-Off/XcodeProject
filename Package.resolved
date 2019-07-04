@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "ObjectCoder",
+        "repositoryURL": "https://github.com/g-Off/ObjectCoder.git",
+        "state": {
+          "branch": null,
+          "revision": "701d70d41d065b7b6567094a45bd4b796f4eb4d2",
+          "version": "0.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
