@@ -22,10 +22,10 @@ public final class PBXLegacyTarget: PBXTarget {
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		
-		self.buildArguments = plist["buildArgumentsString"]?.string
-		self.buildToolPath = plist["buildToolPath"]?.string
-		self.buildWorkingDirectory = plist["buildWorkingDirectory"]?.string
-		if let passBuildSettingsInEnvironment = plist["passBuildSettingsInEnvironment"]?.bool {
+		self.buildArguments = plist[CodingKeys.buildArgumentsString]?.string
+		self.buildToolPath = plist[CodingKeys.buildToolPath]?.string
+		self.buildWorkingDirectory = plist[CodingKeys.buildWorkingDirectory]?.string
+		if let passBuildSettingsInEnvironment = plist[CodingKeys.passBuildSettingsInEnvironment]?.bool {
 			self.passBuildSettingsInEnvironment = passBuildSettingsInEnvironment
 		}
 	}

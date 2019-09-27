@@ -6,7 +6,9 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public class PBXTargetDependency: PBXObject {
+public class PBXTargetDependency: PBXProjectItem {
+	//addPackageProductDependency
+	//removePackageProductDependency
 	private enum CodingKeys: String, CodingKey {
 		case name
 		case target
@@ -39,9 +41,9 @@ public class PBXTargetDependency: PBXObject {
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.name = plist["name"]?.string
-		self.target = objectCache.object(for: plist["target"]?.globalID)
-		self.targetProxy = objectCache.object(for: plist["targetProxy"]?.globalID)
+		self.name = plist[CodingKeys.name]?.string
+		self.target = objectCache.object(for: plist[CodingKeys.target]?.globalID)
+		self.targetProxy = objectCache.object(for: plist[CodingKeys.targetProxy]?.globalID)
 	}
 	
 	override func visit(_ visitor: ObjectVisitor) {

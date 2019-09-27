@@ -41,7 +41,7 @@ class XcodeProjectTests: XCTestCase {
 			try streamWriter.string.write(to: failureURL, atomically: true, encoding: .utf8)
 			add(XCTAttachment(contentsOfFile: failureURL))
 			
-			XCTFail("Failed to generate matching output for \(url.lastPathComponent). Run ksdiff \(url.path) \(failureURL.path)")
+			XCTFail(#"Failed to generate matching output for \#(url.lastPathComponent). Run ksdiff "\#(url.path)" "\#(failureURL.path)""#)
 		}
 	}
 	

@@ -29,15 +29,15 @@ final class XCBuildConfiguration: PBXObject {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let name = plist["name"]?.string,
-			let buildSettings = plist["buildSettings"]?.dictionary
+			let name = plist[CodingKeys.name]?.string,
+			let buildSettings = plist[CodingKeys.buildSettings]?.dictionary
 			else {
 				fatalError()
 		}
 		
 		self.name = name
 		self.buildSettings = BuildSettings(buildSettings)
-		self.baseConfigurationReference = objectCache.object(for: plist["baseConfigurationReference"]?.globalID)
+		self.baseConfigurationReference = objectCache.object(for: plist[CodingKeys.baseConfigurationReference]?.globalID)
 	}
 	
 	override var archiveComment: String {

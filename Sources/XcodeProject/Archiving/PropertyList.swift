@@ -21,6 +21,11 @@ struct PropertyList {
 		return PropertyList(value)
 	}
 	
+	subscript(key: CodingKey) -> PropertyList? {
+		guard let dictionary = self.dictionary else { return nil }
+		return PropertyList(dictionary[key.stringValue])
+	}
+	
 	private func getTypedObject<T>() -> T? {
 		return object as? T
 	}

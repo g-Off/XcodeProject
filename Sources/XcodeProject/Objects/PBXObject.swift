@@ -25,6 +25,10 @@ public class PBXObject: Encodable {
 		self.globalID = globalID
 	}
 	
+	func awake(from decoder: Decoder) throws {
+		
+	}
+	
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		try container.encode(isa, forKey: .isa)
@@ -129,4 +133,7 @@ let types: [PBXObject.Type] = [
 	XCBuildConfiguration.self,
 	XCConfigurationList.self,
 	XCVersionGroup.self,
+	XCLocalSwiftPackageReference.self,
+	XCRemoteSwiftPackageReference.self,
+	XCSwiftPackageProductDependency.self,
 ]

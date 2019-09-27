@@ -6,7 +6,7 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public class PBXBuildPhase: PBXObject {
+public class PBXBuildPhase: PBXProjectItem {
 	private enum CodingKeys: String, CodingKey {
 		case name
 		case files
@@ -61,18 +61,18 @@ public class PBXBuildPhase: PBXObject {
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
 		
-		guard let files = plist["files"]?.array else {
+		guard let files = plist[CodingKeys.files]?.array else {
 			fatalError()
 		}
-		self._name = plist["name"]?.string
+		self._name = plist[CodingKeys.name]?.string
 		self.files = files.compactMap {
 			let file: PBXBuildFile? = objectCache.object(for: PBXGlobalID(rawValue: $0))
 			return file
 		}
 		
-		self.runOnlyForDeploymentPostprocessing = plist["runOnlyForDeploymentPostprocessing"]?.bool
+		self.runOnlyForDeploymentPostprocessing = plist[CodingKeys.runOnlyForDeploymentPostprocessing]?.bool
 		
-		if let v = plist["buildActionMask"]?.string, let buildActionMask = Int32(v) {
+		if let v = plist[CodingKeys.buildActionMask]?.string, let buildActionMask = Int32(v) {
 			self.buildActionMask = buildActionMask
 		}
 	}

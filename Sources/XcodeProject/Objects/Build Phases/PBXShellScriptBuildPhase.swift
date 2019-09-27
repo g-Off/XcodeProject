@@ -27,13 +27,13 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.inputPaths = plist["inputPaths"]?.array ?? []
-		self.outputPaths = plist["outputPaths"]?.array ?? []
-		self.inputFileListPaths = plist["inputFileListPaths"]?.array ?? []
-		self.outputFileListPaths = plist["outputFileListPaths"]?.array ?? []
-		self.shellPath = plist["shellPath"]?.string
-		self.shellScript = plist["shellScript"]?.string
-		self.showEnvVarsInLog = plist["showEnvVarsInLog"]?.bool
+		self.inputPaths = plist[CodingKeys.inputPaths]?.array ?? []
+		self.outputPaths = plist[CodingKeys.outputPaths]?.array ?? []
+		self.inputFileListPaths = plist[CodingKeys.inputFileListPaths]?.array ?? []
+		self.outputFileListPaths = plist[CodingKeys.outputFileListPaths]?.array ?? []
+		self.shellPath = plist[CodingKeys.shellPath]?.string
+		self.shellScript = plist[CodingKeys.shellScript]?.string
+		self.showEnvVarsInLog = plist[CodingKeys.showEnvVarsInLog]?.bool
 	}
 	
 	public override func encode(to encoder: Encoder) throws {

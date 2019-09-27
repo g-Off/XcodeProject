@@ -17,6 +17,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		case hasScannedForEncodings
 		case knownRegions
 		case mainGroup
+		case packageReferences
 		case productRefGroup
 		case projectDirPath
 		case projectReferences
@@ -88,6 +89,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		case xcode8_0 = "Xcode 8.0"
 		case xcode9_3 = "Xcode 9.3"
 		case xcode_10 = "Xcode 10.0"
+		case xcode_11 = "Xcode 11.0"
 	}
 
 	var attributes = Attributes([:])
@@ -115,6 +117,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 			targets.forEach { $0.parent = self }
 		}
 	}
+	var packageReferences: [XCSwiftPackageReference]?
 	
 	var path: String?
 	
@@ -146,18 +149,18 @@ public final class PBXProject: PBXObject, PBXContainer {
 		super.update(with: plist, objectCache: objectCache)
 		
 		guard
-			let attributes = plist["attributes"]?.dictionary,
-			let buildConfigurationListID = PBXGlobalID(rawValue: plist["buildConfigurationList"]?.string),
+			let attributes = plist[CodingKeys.attributes]?.dictionary,
+			let buildConfigurationListID = PBXGlobalID(rawValue: plist[CodingKeys.buildConfigurationList]?.string),
 			let buildConfigurationList = objectCache.object(for: buildConfigurationListID) as? XCConfigurationList,
-			let compatibilityVersion = CompatibilityVersion(rawValue: plist["compatibilityVersion"]?.string ?? ""),
-			let developmentRegion = plist["developmentRegion"]?.string,
-			let hasScannedForEncodings = plist["hasScannedForEncodings"]?.string,
-			let knownRegions = plist["knownRegions"]?.array,
-			let mainGroup = objectCache.object(for: PBXGlobalID(rawValue: plist["mainGroup"]?.string)) as? PBXGroup,
-			let productRefGroup = objectCache.object(for: PBXGlobalID(rawValue: plist["productRefGroup"]?.string)) as? PBXGroup,
-			let projectDirPath = plist["projectDirPath"]?.string,
-			let projectRoot = plist["projectRoot"]?.string,
-			let targets = plist["targets"]?.array
+			let compatibilityVersion = CompatibilityVersion(rawValue: plist[CodingKeys.compatibilityVersion]?.string ?? ""),
+			let developmentRegion = plist[CodingKeys.developmentRegion]?.string,
+			let hasScannedForEncodings = plist[CodingKeys.hasScannedForEncodings]?.string,
+			let knownRegions = plist[CodingKeys.knownRegions]?.array,
+			let mainGroup = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.mainGroup]?.string)) as? PBXGroup,
+			let productRefGroup = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.productRefGroup]?.string)) as? PBXGroup,
+			let projectDirPath = plist[CodingKeys.projectDirPath]?.string,
+			let projectRoot = plist[CodingKeys.projectRoot]?.string,
+			let targets = plist[CodingKeys.targets]?.array
 			else {
 				fatalError()
 		}
@@ -172,10 +175,16 @@ public final class PBXProject: PBXObject, PBXContainer {
 		self.productRefGroup = productRefGroup
 		self.projectDirPath = projectDirPath
 		
-		if let projectReferences = plist["projectReferences"]?.objectArray() {
+		if let projectReferences = plist[CodingKeys.projectReferences]?.objectArray() {
 			self.projectReferences = Set(projectReferences.map {
 				XCProjectReferenceInfo(with: $0, objectCache: objectCache)
 			})
+		}
+		
+		if let packageReferences = plist[CodingKeys.packageReferences]?.array {
+			self.packageReferences = packageReferences.map { PBXGlobalID(rawValue: $0) }.compactMap {
+				objectCache.object(for: $0)
+			}
 		}
 		
 		self.projectRoot = projectRoot
@@ -221,6 +230,9 @@ public final class PBXProject: PBXObject, PBXContainer {
 			visitor.visit(object: $0.productGroup)
 			visitor.visit(object: $0.projectReference)
 		}
+		packageReferences?.forEach {
+			visitor.visit(object: $0)
+		}
 	}
 	
 	public override func encode(to encoder: Encoder) throws {
@@ -233,6 +245,7 @@ public final class PBXProject: PBXObject, PBXContainer {
 		try container.encode(hasScannedForEncodings, forKey: .hasScannedForEncodings)
 		try container.encode(knownRegions, forKey: .knownRegions)
 		try container.encode(mainGroup, forKey: .mainGroup)
+		try container.encodeIfPresent(packageReferences, forKey: .packageReferences)
 		try container.encode(productRefGroup, forKey: .productRefGroup)
 		try container.encodeIfPresent(projectDirPath, forKey: .projectDirPath)
 		try container.encodeIfPresent(projectReferences?.sorted(by: \XCProjectReferenceInfo.projectReference.displayName, using: String.caseInsensitiveCompare), forKey: .projectReferences)

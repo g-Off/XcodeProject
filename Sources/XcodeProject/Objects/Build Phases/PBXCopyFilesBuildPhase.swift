@@ -39,9 +39,9 @@ public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		guard let dstPath = plist["dstPath"]?.string else { fatalError() }
+		guard let dstPath = plist[CodingKeys.dstPath]?.string else { fatalError() }
 		self.dstPath = dstPath
-		guard let dstSubfolderSpec = Destination(string: plist["dstSubfolderSpec"]?.string) else { fatalError() }
+		guard let dstSubfolderSpec = Destination(string: plist[CodingKeys.dstSubfolderSpec]?.string) else { fatalError() }
 		self.dstSubfolderSpec = dstSubfolderSpec
 	}
 	

@@ -6,10 +6,11 @@
 //  Copyright © 2017 Geoffrey Foster. All rights reserved.
 //
 
-public final class PBXBuildFile: PBXObject {
+public final class PBXBuildFile: PBXProjectItem {
 	private enum CodingKeys: String, CodingKey {
 		case fileRef
 		case settings
+		case productRef
 	}
 	public enum Attribute: String, Comparable, Encodable {
 		public static func < (lhs: PBXBuildFile.Attribute, rhs: PBXBuildFile.Attribute) -> Bool {
@@ -18,6 +19,7 @@ public final class PBXBuildFile: PBXObject {
 		
 		case `public` = "Public"
 		case `private` = "Private"
+		case required = "Required"
 		case `weak` = "Weak"
 		case client = "Client"
 		case server = "Server"
@@ -61,6 +63,8 @@ public final class PBXBuildFile: PBXObject {
 	}
 	var settings: Settings?
 	
+	private(set) var productReference: PBXProductDependency?
+	
 	public convenience init(globalID: PBXGlobalID, fileReference: PBXReference) {
 		self.init(globalID: globalID)
 		fileRef = fileReference
@@ -71,24 +75,27 @@ public final class PBXBuildFile: PBXObject {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		try container.encodeIfPresent(fileRef, forKey: .fileRef)
 		try container.encodeIfPresent(settings, forKey: .settings)
+		try container.encodeIfPresent(productReference, forKey: .productRef)
 	}
 	
 	override func update(with plist: PropertyList, objectCache: ObjectCache) {
 		super.update(with: plist, objectCache: objectCache)
-		self.fileRef = objectCache.object(for: PBXGlobalID(rawValue: plist["fileRef"]?.string))
+		self.fileRef = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.fileRef]?.string))
+		self.productReference = objectCache.object(for: PBXGlobalID(rawValue: plist[CodingKeys.productRef]?.string))
 		self.settings = Settings(plist["settings"]?.dictionary)
 	}
 	
 	override var archiveComment: String {
-		guard let fileRef = fileRef, let parent = parent else {
+		guard let parent = parent, let refComment = fileRef?.archiveComment ?? productReference?.archiveComment else {
 			return super.archiveComment
 		}
-		return "\(fileRef.archiveComment) in \(parent.archiveComment)"
+		return "\(refComment) in \(parent.archiveComment)"
 	}
 	
 	override func visit(_ visitor: ObjectVisitor) {
 		super.visit(visitor)
 		visitor.visit(object: fileRef)
+		visitor.visit(object: productReference)
 	}
 	
 	override var archiveInPlistOnSingleLine: Bool {
