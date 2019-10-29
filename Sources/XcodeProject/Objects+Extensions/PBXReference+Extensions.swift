@@ -36,7 +36,11 @@ public extension PBXReference {
 		return nil
 	}
 	
-	enum SortOption: String {
+	enum SortOption: String, CustomStringConvertible, CaseIterable {
+		public var description: String {
+			return rawValue
+		}
+		
 		case name
 		case type
 		

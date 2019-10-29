@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Version
 
 public final class XCRemoteSwiftPackageReference: XCSwiftPackageReference {
 	public enum Requirement: Encodable {
@@ -16,33 +17,6 @@ public final class XCRemoteSwiftPackageReference: XCSwiftPackageReference {
 			case version
 			case branch
 			case revision
-		}
-
-		public struct Version: CustomStringConvertible, Encodable {
-			let major: Int
-			let minor: Int
-			let patch: Int
-
-			public init(major: Int, minor: Int, patch: Int) {
-				self.major = major
-				self.minor = minor
-				self.patch = patch
-			}
-			
-			init?(_ value: String) {
-				var integerValues = value.components(separatedBy: ".").compactMap { Int($0) }
-				guard integerValues.count == 3 else { return nil }
-				self.init(major: integerValues.removeFirst(), minor: integerValues.removeFirst(), patch: integerValues.removeFirst())
-			}
-			
-			public var description: String {
-				return "\(major).\(minor).\(patch)"
-			}
-			
-			public func encode(to encoder: Encoder) throws {
-				var container = encoder.singleValueContainer()
-				try container.encode(description)
-			}
 		}
 		
 		public struct GitHash: Encodable, CustomStringConvertible {
