@@ -13,12 +13,13 @@ let package = Package(
             targets: ["XcodeProject"]),
     ],
     dependencies: [
-		.package(url: "https://github.com/g-Off/ObjectCoder.git", .exact("0.1.0"))
+		.package(url: "https://github.com/g-Off/ObjectCoder.git", .exact("0.1.0")),
+		.package(url: "https://github.com/mxcl/Version.git", from: "1.0.0")
     ],
     targets: [
         .target(
             name: "XcodeProject",
-            dependencies: ["ObjectCoder"]),
+            dependencies: ["ObjectCoder", "Version"]),
         .testTarget(
             name: "XcodeProjectTests",
             dependencies: ["XcodeProject"]),
